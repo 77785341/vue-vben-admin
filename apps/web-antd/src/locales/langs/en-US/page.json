@@ -11,5 +11,18 @@
     "title": "Dashboard",
     "analytics": "Analytics",
     "workspace": "Workspace"
+  },
+  "site": {
+    "title": "Installation Site Management"
+  },
+  "account": {
+    "title": "Account Management",
+    "installer": "Installer Management",
+    "staff": "Staff Management"
+  },
+  "system": {
+    "title": "System",
+    "role": "Role",
+    "menu": "Menu"
   }
 }
