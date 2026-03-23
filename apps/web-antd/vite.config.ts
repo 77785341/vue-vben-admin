@@ -4,9 +4,9 @@
  * @LastEditors: Felix 77785341@qq.com
  * @LastEditTime: 2026-03-23 15:58:02
  * @FilePath: \vue-vben-admin\apps\web-antd\vite.config.ts
- * @Description: 
- * 
- * Copyright (c) 2026 by ${git_name_email}, All Rights Reserved. 
+ * @Description:
+ *
+ * Copyright (c) 2026 by ${git_name_email}, All Rights Reserved.
  */
 import { defineConfig } from '@vben/vite-config';
 

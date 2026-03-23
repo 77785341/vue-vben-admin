@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 import { Page, useVbenDrawer } from '@vben/common-ui';
+
 import { Button, Descriptions, message } from 'ant-design-vue';
 
 import { getFamilyById } from '#/api/family/family';
@@ -68,15 +69,37 @@ onMounted(() => {
       </div>
 
       <Descriptions title="家庭基本信息" bordered v-if="familyData">
-        <Descriptions.Item label="家庭名称">{{ familyData.familyName }}</Descriptions.Item>
-        <Descriptions.Item label="联系人">{{ familyData.contactName }}</Descriptions.Item>
-        <Descriptions.Item label="联系电话">{{ familyData.contactPhone }}</Descriptions.Item>
-        <Descriptions.Item label="地址">{{ familyData.address }}</Descriptions.Item>
+        <Descriptions.Item label="家庭名称">
+{{
+          familyData.familyName
+        }}
+</Descriptions.Item>
+        <Descriptions.Item label="联系人">
+{{
+          familyData.contactName
+        }}
+</Descriptions.Item>
+        <Descriptions.Item label="联系电话">
+{{
+          familyData.contactPhone
+        }}
+</Descriptions.Item>
+        <Descriptions.Item label="地址">
+{{
+          familyData.address
+        }}
+</Descriptions.Item>
         <Descriptions.Item label="状态">
-          <span v-if="familyData.status === 'on'" class="text-green-500">{{ $t('common.enabled') }}</span>
+          <span v-if="familyData.status === 'on'" class="text-green-500">{{
+            $t('common.enabled')
+          }}</span>
           <span v-else class="text-red-500">{{ $t('common.disabled') }}</span>
         </Descriptions.Item>
-        <Descriptions.Item label="创建时间">{{ familyData.createTime }}</Descriptions.Item>
+        <Descriptions.Item label="创建时间">
+{{
+          familyData.createTime
+        }}
+</Descriptions.Item>
       </Descriptions>
     </div>
   </Page>

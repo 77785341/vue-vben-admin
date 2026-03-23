@@ -243,8 +243,12 @@ onMounted(() => {
       </template>
       <template #image-url="{ row }">
         <div class="flex-center h-full">
-          <img v-if="(row as any).avatar" :src="API_BASE_URL + (row as any).avatar" :alt="row.loginName"
-            class="size-10 rounded-full object-cover" />
+          <img
+            v-if="(row as any).avatar"
+            :src="API_BASE_URL + (row as any).avatar"
+            :alt="row.loginName"
+            class="size-10 rounded-full object-cover"
+          />
           <div v-else class="flex-center size-10 rounded-full bg-gray-200">
             {{ row.loginName?.charAt(0) || '?' }}
           </div>
