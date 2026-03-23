@@ -10,7 +10,7 @@ import { resetAllStores, useAccessStore, useUserStore } from '@vben/stores';
 import { notification } from 'ant-design-vue';
 import { defineStore } from 'pinia';
 
-import { getAccessCodesApi, getUserInfoApi, loginApi, logoutApi } from '#/api';
+import { getUserInfoApi, loginApi, logoutApi } from '#/api';
 import { $t } from '#/locales';
 
 export const useAuthStore = defineStore('auth', () => {
@@ -33,22 +33,14 @@ export const useAuthStore = defineStore('auth', () => {
     let userInfo: null | UserInfo = null;
     try {
       loginLoading.value = true;
-      const { accessToken } = await loginApi(params);
-
+      const { token } = await loginApi(params);
+      const accessToken = token;
       // 如果成功获取到 accessToken
       if (accessToken) {
         accessStore.setAccessToken(accessToken);
 
         // 获取用户信息并存储到 accessStore 中
-        const [fetchUserInfoResult, accessCodes] = await Promise.all([
-          fetchUserInfo(),
-          getAccessCodesApi(),
-        ]);
-
-        userInfo = fetchUserInfoResult;
-
-        userStore.setUserInfo(userInfo);
-        accessStore.setAccessCodes(accessCodes);
+        userInfo = await fetchUserInfo();
 
         if (accessStore.loginExpired) {
           accessStore.setLoginExpired(false);
@@ -68,6 +60,14 @@ export const useAuthStore = defineStore('auth', () => {
           });
         }
       }
+    } catch (error) {
+      console.error('Login failed:', error);
+      // 可以在这里添加错误处理逻辑，例如显示错误消息
+      notification.error({
+        description: error instanceof Error ? error.message : 'Login failed',
+        duration: 3,
+        message: $t('authentication.loginFailed'),
+      });
     } finally {
       loginLoading.value = false;
     }
@@ -100,6 +100,9 @@ export const useAuthStore = defineStore('auth', () => {
   async function fetchUserInfo() {
     const userInfo = await getUserInfoApi();
     userStore.setUserInfo(userInfo);
+
+    accessStore.setAccessCodes(userInfo.permissions ?? []);
+
     return userInfo;
   }
 

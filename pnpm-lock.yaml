@@ -425,7 +425,7 @@ catalogs:
       version: 4.15.1
     vite:
       specifier: ^8.0.1
-      version: 8.0.0
+      version: 8.0.1
     vite-plugin-compression:
       specifier: ^0.5.1
       version: 0.5.1
@@ -631,6 +631,9 @@ importers:
 
   apps/web-antd:
     dependencies:
+      '@vben-core/menu-ui':
+        specifier: workspace:*
+        version: link:../../packages/@core/ui-kit/menu-ui
       '@vben/access':
         specifier: workspace:*
         version: link:../../packages/effects/access

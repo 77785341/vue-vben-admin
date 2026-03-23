@@ -4,6 +4,26 @@ import { mergeRouteModules, traverseTreeValues } from '@vben/utils';
 
 import { coreRoutes, fallbackNotFoundRoute } from './core';
 
+/**
+ * 页面组件映射（用于后端动态路由/菜单配置时的 component 字段）
+ * key 会被规范化成类似：/system/menu/index
+ */
+const pageModules = import.meta.glob('../views/**/*.vue');
+
+function normalizeViewPath(path: string): string {
+  const normalizedPath = path.replace(/^(\.\/|\.\.\/)+/, '');
+  const viewPath = normalizedPath.startsWith('/')
+    ? normalizedPath
+    : `/${normalizedPath}`;
+  // 与后端路由生成工具保持一致：去掉前缀 /views
+  return viewPath.replace(/^\/views/, '');
+}
+
+export const componentKeys = Object.keys(pageModules)
+  .map((key) => normalizeViewPath(key).replace(/\.vue$/, ''))
+  .filter((key) => !key.startsWith('/_core/'))
+  .toSorted();
+
 const dynamicRouteFiles = import.meta.glob('./modules/**/*.ts', {
   eager: true,
 });

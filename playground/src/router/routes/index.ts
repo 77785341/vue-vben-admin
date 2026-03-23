@@ -1,8 +1,38 @@
+/*
+ * @Author: Felix 77785341@qq.com
+ * @Date: 2026-03-23 15:15:47
+ * @LastEditors: Felix 77785341@qq.com
+ * @LastEditTime: 2026-03-23 16:47:30
+ * @FilePath: \vue-vben-admin\playground\src\router\routes\index.ts
+ * @Description: 
+ * 
+ * Copyright (c) 2026 by ${git_name_email}, All Rights Reserved. 
+ */
 import type { RouteRecordRaw } from 'vue-router';
 
 import { mergeRouteModules, traverseTreeValues } from '@vben/utils';
 
 import { coreRoutes, fallbackNotFoundRoute } from './core';
+
+/**
+ * 页面组件映射（用于后端动态路由/菜单配置时的 component 字段）
+ * key 会被规范化成类似：/system/menu/index
+ */
+const pageModules = import.meta.glob('../../views/**/*.vue');
+
+function normalizeViewPath(path: string): string {
+  const normalizedPath = path.replace(/^(\.\/|\.\.\/)+/, '');
+  const viewPath = normalizedPath.startsWith('/')
+    ? normalizedPath
+    : `/${normalizedPath}`;
+  // 与后端路由生成工具保持一致：去掉前缀 /views
+  return viewPath.replace(/^\/views/, '');
+}
+
+export const componentKeys = Object.keys(pageModules)
+  .map((key) => normalizeViewPath(key).replace(/\.vue$/, ''))
+  .filter((key) => !key.startsWith('/_core/'))
+  .toSorted();
 
 const dynamicRouteFiles = import.meta.glob('./modules/**/*.ts', {
   eager: true,
@@ -34,14 +64,4 @@ const coreRouteNames = traverseTreeValues(coreRoutes, (route) => route.name);
 
 /** 有权限校验的路由列表，包含动态路由和静态路由 */
 const accessRoutes = [...dynamicRoutes, ...staticRoutes];
-
-const componentKeys: string[] = Object.keys(
-  import.meta.glob('../../views/**/*.vue'),
-)
-  .filter((item) => !item.includes('/modules/'))
-  .map((v) => {
-    const path = v.replace('../../views/', '/');
-    return path.endsWith('.vue') ? path.slice(0, -4) : path;
-  });
-
-export { accessRoutes, componentKeys, coreRouteNames, routes };
+export { accessRoutes, coreRouteNames, routes };
