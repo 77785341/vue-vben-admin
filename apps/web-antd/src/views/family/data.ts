@@ -115,46 +115,68 @@ export function useColumns<T = FamilyApi.Family>(
 ): VxeTableGridOptions['columns'] {
   return [
     {
-      field: 'installerStationName',
-      title: $t('page.family.installerStationName'),
+      field: 'installerStationPicture',
+      title: '头像',
       width: 200,
     },
     {
-      field: 'customerName',
-      title: $t('page.family.customerName'),
-      width: 150,
+      field: 'installerStationName',
+      title: '家庭名称',
+      width: 200,
     },
     {
-      field: 'customerPhone',
-      title: $t('page.family.customerPhone'),
-      width: 150,
+      field: 'totalFaultCount',
+      title: '绑定设备数量',
+      width: 200,
+    },
+    {
+      field: 'installerStationName',
+      title: '故障类型',
+      width: 200,
+    },
+    {
+      field: 'installerStationId',
+      title: '国家',
+      width: 200,
     },
     {
       field: 'installerStationAddress',
-      title: $t('page.family.installerStationAddress'),
-      minWidth: 200,
+      title: '地址',
+      width: 200,
     },
     {
-      field: 'country',
-      title: $t('page.family.country'),
-      width: 120,
+      field: 'installerStationName',
+      title: '创建时间',
+      width: 200,
     },
     {
-      field: 'zipCode',
-      title: $t('page.family.zipCode'),
-      width: 100,
+      field: 'installerInfoId',
+      title: '安装商',
+      width: 200,
     },
     {
-      cellRender: {
-        name: 'CellTag',
+      field: 'pvCapacity',
+      title: '光伏装机容量',
+      width: 200,
+    },
+    {
+      field: 'batteryCapacity',
+      title: '电池总容量',
+      width: 200,
+    },
+    {
+      field: 'devicesParameters',
+      title: '充电桩总功率',
+      width: 200,
+      // 格式化一下，数据返回的devicesParameters是一个数组，固定的第0项是充电桩数据，这里面的parameterValue是数据
+      formatter: ({ cellValue }) => {
+        console.warn('cellValue', cellValue);
+        return cellValue && cellValue.length > 0 ? `${cellValue[0].parameterValue} kW` : '--';
       },
-      field: 'status',
-      title: $t('page.family.status'),
-      width: 100,
     },
     {
-      field: 'createTime',
-      title: $t('common.createTime'),
+      field: 'installerStationName',
+      title: '热泵总功率',
       width: 200,
     },
     {
