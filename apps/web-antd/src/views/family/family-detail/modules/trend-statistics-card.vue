@@ -28,23 +28,23 @@ function handleDateChange(
         size="small"
         :type="trendPeriod === 'day' ? 'primary' : 'default'"
         @click="emit('periodChange', 'day')"
-        >
-日统计
-</Button>
+      >
+        日统计
+      </Button>
       <Button
         size="small"
         :type="trendPeriod === 'month' ? 'primary' : 'default'"
         @click="emit('periodChange', 'month')"
-        >
-月统计
-</Button>
+      >
+        月统计
+      </Button>
       <Button
         size="small"
         :type="trendPeriod === 'year' ? 'primary' : 'default'"
         @click="emit('periodChange', 'year')"
-        >
-年统计
-</Button>
+      >
+        年统计
+      </Button>
       <DatePicker
         :allow-clear="false"
         :format="trendDateFormat"
