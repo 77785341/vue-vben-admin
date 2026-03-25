@@ -415,7 +415,11 @@ function normalizeSeriesData(
         const parsedValue = Number(item);
         return Number.isFinite(parsedValue) ? parsedValue : null;
       })
-      .map((item) => (item === null || item === undefined || Number.isFinite(item) ? item : null));
+      .map((item) =>
+        item === null || item === undefined || Number.isFinite(item)
+          ? item
+          : null,
+      );
 
     if (numbers.length >= length) return numbers.slice(0, length);
     return [
