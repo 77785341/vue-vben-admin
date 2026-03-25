@@ -2,12 +2,13 @@ import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { FamilyApi } from '#/api/family/family';
 
+import { z } from '#/adapter/form';
+import { getCountryList } from '#/api/family';
 import { $t } from '#/locales';
 
 export function useFormSchema(): VbenFormSchema[] {
   return [
     {
-      // 隐藏id字段，避免用户手动修改
       component: 'Input',
       fieldName: 'id',
       label: 'id',
@@ -18,66 +19,76 @@ export function useFormSchema(): VbenFormSchema[] {
     },
     {
       component: 'Input',
-      fieldName: 'installerStationName',
-      label: $t('page.family.installerStationName'),
-      rules: 'required',
-    },
-    {
-      component: 'Input',
-      fieldName: 'installerInfoId',
-      label: $t('page.family.installerInfoId'),
-      rules: 'required',
-    },
-    {
-      component: 'Input',
-      fieldName: 'country',
-      label: $t('page.family.country'),
-    },
-    {
-      component: 'Input',
-      fieldName: 'zipCode',
-      label: $t('page.family.zipCode'),
-    },
-    {
-      component: 'Input',
-      fieldName: 'installerStationAddress',
-      label: $t('page.family.installerStationAddress'),
-    },
-    {
-      component: 'Input',
       fieldName: 'installerStationPicture',
       label: $t('page.family.installerStationPicture'),
+      dependencies: {
+        triggerFields: ['installerStationPicture'],
+        show: false,
+      },
     },
     {
       component: 'Input',
       fieldName: 'customerName',
       label: $t('page.family.customerName'),
+      dependencies: {
+        triggerFields: ['installerStationPicture'],
+        show: false,
+      },
+    },
+    {
+      component: 'Input',
+      fieldName: 'installerInfoId',
+      label: $t('page.family.installerInfoId'),
+      dependencies: {
+        triggerFields: ['installerStationPicture'],
+        show: false,
+      },
+    },
+    {
+      component: 'Input',
+      fieldName: 'installerStationName',
+      label: $t('page.family.installerStationName'),
+      rules: 'required',
+    },
+    {
+      component: 'ApiSelect',
+      componentProps: {
+        api: getCountryList,
+        class: 'w-full',
+        labelField: 'countryName',
+        valueField: 'countryId',
+      },
+      fieldName: 'country',
+      label: $t('page.family.country'),
       rules: 'required',
     },
     {
       component: 'Input',
-      fieldName: 'customerPhone',
-      label: $t('page.family.customerPhone'),
+      fieldName: 'installerStationAddress',
+      label: $t('page.family.installerStationAddress'),
+      rules: 'required',
+    },
+    {
+      component: 'Input',
+      fieldName: 'zipCode',
+      label: $t('page.family.zipCode'),
       rules: 'required',
     },
     {
       component: 'Input',
       fieldName: 'customerEmail',
       label: $t('page.family.customerEmail'),
+      rules: z.string().email('邮箱格式不正确').or(z.literal('')).optional(),
     },
     {
-      component: 'RadioGroup',
-      componentProps: {
-        buttonStyle: 'solid',
-        options: [
-          { label: $t('common.enabled'), value: 'on' },
-          { label: $t('common.disabled'), value: 'off' },
-        ],
-        optionType: 'button',
-      },
-      defaultValue: 'on',
-      fieldName: 'status',
-      label: $t('page.family.status'),
+      component: 'Input',
+      fieldName: 'customerPhone',
+      label: $t('page.family.customerPhone'),
+      rules: z
+        .string()
+        .regex(/^\+?[0-9-]{6,}$/, '电话号码需要至少6位数字，可以包含+和-')
+        .or(z.literal(''))
+        .optional(),
     },
   ];
 }
@@ -86,26 +97,47 @@ export function useGridFormSchema(): VbenFormSchema[] {
   return [
     {
       component: 'Input',
+      componentProps: {
+        placeholder: '请输入家庭名称',
+      },
       fieldName: 'installerStationName',
-      label: $t('page.family.installerStationName'),
-    },
-
-    {
-      component: 'Input',
-      fieldName: 'customerPhone',
-      label: $t('page.family.customerPhone'),
+      label: '家庭名称',
     },
     {
       component: 'Select',
       componentProps: {
         allowClear: true,
+        placeholder: '请选择故障类型',
         options: [
-          { label: $t('common.enabled'), value: 'on' },
-          { label: $t('common.disabled'), value: 'off' },
+          { label: '故障', value: '1' },
+          { label: '警告', value: '3' },
+          { label: '正常', value: '2' },
+          { label: '全部', value: '0' },
         ],
       },
-      fieldName: 'status',
-      label: $t('page.family.status'),
+      fieldName: 'faultNum',
+      label: '故障类型',
+    },
+    {
+      component: 'ApiSelect',
+      componentProps: {
+        api: getCountryList,
+        allowClear: true,
+        class: 'w-full',
+        labelField: 'countryName',
+        placeholder: '请选择国家',
+        valueField: 'countryId',
+      },
+      fieldName: 'countryId',
+      label: '国家',
+    },
+    {
+      component: 'Input',
+      componentProps: {
+        placeholder: '请输入安装商名称',
+      },
+      fieldName: 'stationName',
+      label: '安装商名称',
     },
   ];
 }
@@ -117,67 +149,52 @@ export function useColumns<T = FamilyApi.Family>(
     {
       field: 'installerStationPicture',
       title: '头像',
-      width: 200,
+      slots: { default: 'image-url' },
     },
     {
       field: 'installerStationName',
       title: '家庭名称',
-      width: 200,
     },
     {
       field: 'totalFaultCount',
       title: '绑定设备数量',
-      width: 200,
     },
     {
-      field: 'installerStationName',
+      field: 'faultType',
       title: '故障类型',
-      width: 200,
+      slots: { default: 'fault-type' },
     },
     {
-      field: 'installerStationId',
+      field: 'countryName',
       title: '国家',
-      width: 200,
     },
     {
       field: 'installerStationAddress',
       title: '地址',
-      width: 200,
     },
     {
-      field: 'installerStationName',
+      field: 'createTime',
       title: '创建时间',
-      width: 200,
     },
-    {
-      field: 'installerInfoId',
-      title: '安装商',
-      width: 200,
-    },
+    // {
+    //   field: 'installerInfoId',
+    //   title: '安装商',
+    // },
     {
       field: 'pvCapacity',
       title: '光伏装机容量',
-      width: 200,
     },
     {
       field: 'batteryCapacity',
       title: '电池总容量',
-      width: 200,
     },
     {
-      field: 'devicesParameters',
+      field: 'wallboxPower',
       title: '充电桩总功率',
-      width: 200,
-      // 格式化一下，数据返回的devicesParameters是一个数组，固定的第0项是充电桩数据，这里面的parameterValue是数据
-      formatter: ({ cellValue }) => {
-        console.warn('cellValue', cellValue);
-        return cellValue && cellValue.length > 0 ? `${cellValue[0].parameterValue} kW` : '--';
-      },
     },
     {
-      field: 'installerStationName',
+      field: 'pumpPower',
       title: '热泵总功率',
-      width: 200,
     },
     {
       align: 'center',
@@ -189,13 +206,14 @@ export function useColumns<T = FamilyApi.Family>(
         },
         name: 'CellOperation',
         options: [
-          { code: 'edit', text: $t('common.edit') },
-          { code: 'delete', text: $t('common.delete'), danger: true },
+          // { code: 'edit', text: $t('common.edit') },
+          // { code: 'delete', text: $t('common.delete'), danger: true },
+          { code: 'view', text: '查看' },
         ],
       },
       field: 'operation',
       fixed: 'right',
-      title: $t('common.operation'),
+      title: $t('page.family.operation'),
       width: 130,
     },
   ];

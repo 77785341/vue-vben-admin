@@ -2,16 +2,18 @@
  * @Author: Felix 77785341@qq.com
  * @Date: 2026-03-18 13:42:51
  * @LastEditors: Felix 77785341@qq.com
- * @LastEditTime: 2026-03-23 13:55:07
+ * @LastEditTime: 2026-03-24 14:21:20
  * @FilePath: \vue-vben-admin\apps\web-antd\src\views\family\modules\form.vue
  * @Description:
  *
  * Copyright (c) 2026 by ${git_name_email}, All Rights Reserved.
 -->
 <script lang="ts" setup>
+import type { FamilyApi } from '#/api/family/family';
+
 import { computed, reactive, ref } from 'vue';
 
-import { useVbenDrawer } from '@vben/common-ui';
+import { useVbenModal } from '@vben/common-ui';
 
 import { useVbenForm } from '#/adapter/form';
 import { createFamily, updateFamily } from '#/api/family';
@@ -25,6 +27,12 @@ const emit = defineEmits<{
 
 const isUpdate = ref(false);
 const rowId = ref<string>('');
+
+const getTitle = computed(() => {
+  return isUpdate.value
+    ? $t('ui.actionTitle.edit', [$t('page.family.familyName')])
+    : $t('ui.actionTitle.create', [$t('page.family.familyName')]);
+});
 
 // 计算表单配置
 const formSchema = computed(() => {
@@ -43,30 +51,31 @@ const formOptions = reactive({
 
 const [Form, formApi] = useVbenForm(formOptions);
 
-const [Drawer, drawerApi] = useVbenDrawer({
+const [Modal, modalApi] = useVbenModal({
   onCancel() {
-    drawerApi.close();
+    modalApi.close();
   },
   onConfirm: async () => {
     const { valid } = await formApi.validate();
     if (!valid) return;
 
     try {
-      drawerApi.setState({ loading: true });
-      const values = await formApi.getValues();
+      modalApi.setState({ loading: true });
+      const values =
+        (await formApi.getValues()) as FamilyApi.FamilySubmitParams;
       await (isUpdate.value
         ? updateFamily(rowId.value, values)
-        : createFamily(values as any));
+        : createFamily(values));
       emit('success');
-      drawerApi.close();
+      modalApi.close();
     } finally {
-      drawerApi.setState({ loading: false });
+      modalApi.setState({ loading: false });
     }
   },
   onOpenChange: async (isOpen: boolean) => {
     if (!isOpen) return;
 
-    const data = drawerApi.getData<any>();
+    const data = modalApi.getData<any>();
     isUpdate.value = !!data?.id;
 
     if (isUpdate.value && data) {
@@ -77,14 +86,11 @@ const [Drawer, drawerApi] = useVbenDrawer({
       await formApi.resetForm();
     }
   },
-  title: isUpdate.value
-    ? $t('ui.actionTitle.edit', [$t('page.family.familyName')])
-    : $t('ui.actionTitle.create', [$t('page.family.familyName')]),
 });
 </script>
 
 <template>
-  <Drawer>
+  <Modal :title="getTitle">
     <Form />
-  </Drawer>
+  </Modal>
 </template>

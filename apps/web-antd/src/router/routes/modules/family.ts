@@ -28,7 +28,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
           title: $t('page.family.detail'),
           hideInMenu: true,
-          activeMenu: '/family',
+          activePath: '/family',
         },
       },
     ],

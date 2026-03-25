@@ -1,0 +1,29 @@
+@font-face {
+  font-family: AppCustomFont;
+  font-style: normal;
+  font-weight: 100 900;
+  src: url('/font/AppCustomFont.ttf') format('truetype');
+  font-display: swap;
+}
+
+:root {
+  --app-font-family:
+    'AppCustomFont', 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', arial,
+    sans-serif;
+  --font-family: var(--app-font-family);
+  --font-sans: var(--app-font-family);
+}
+
+html,
+body,
+#app,
+.ant-app {
+  font-family: var(--app-font-family) !important;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit !important;
+}

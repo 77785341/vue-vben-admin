@@ -1,4 +1,9 @@
 {
+  "account": {
+    "installer": "安装商管理",
+    "staff": "员工管理",
+    "title": "账号管理"
+  },
   "auth": {
     "codeLogin": "验证码登录",
     "forgetPassword": "忘记密码",
@@ -12,38 +17,33 @@
     "title": "概览",
     "workspace": "工作台"
   },
-  "site": {
-    "title": "安装站点管理"
+  "family": {
+    "address": "地址",
+    "contactName": "联系人",
+    "contactPhone": "联系电话",
+    "country": "国家",
+    "createTime": "创建时间",
+    "customerEmail": "客户邮箱",
+    "customerName": "客户姓名",
+    "customerPhone": "客户电话",
+    "detail": "家庭详情",
+    "familyName": "家庭名称",
+    "installerInfoId": "安装商ID",
+    "installerStationAddress": "家庭地址",
+    "installerStationName": "家庭名称",
+    "installerStationPicture": "家庭图片",
+    "list": "家庭管理",
+    "name": "家庭",
+    "operation": "操作",
+    "status": "状态",
+    "zipCode": "邮政编码"
   },
-  "account": {
-    "title": "账号管理",
-    "installer": "安装商管理",
-    "staff": "员工管理"
+  "site": {
+    "title": "家庭管理"
   },
   "system": {
     "menu": "菜单管理",
     "role": "角色管理",
     "title": "系统管理"
-  },
-  "family": {
-    "name": "家庭",
-    "list": "家庭管理",
-    "detail": "家庭详情",
-    "familyName": "家庭名称",
-    "contactName": "联系人",
-    "contactPhone": "联系电话",
-    "address": "地址",
-    "status": "状态",
-    "createTime": "创建时间",
-    "operation": "操作",
-    "installerStationName": "安装站点名称",
-    "installerInfoId": "安装信息ID",
-    "country": "国家",
-    "zipCode": "邮政编码",
-    "installerStationAddress": "安装站点地址",
-    "installerStationPicture": "安装站点图片",
-    "customerName": "客户姓名",
-    "customerPhone": "客户电话",
-    "customerEmail": "客户邮箱"
   }
 }

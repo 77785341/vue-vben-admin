@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import type { Recordable } from '@vben/types';
-
 import type {
   OnActionClickParams,
   VxeTableGridOptions,
@@ -8,19 +6,22 @@ import type {
 import type { FamilyApi } from '#/api/family/family';
 
 import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
-import { Page, useVbenDrawer } from '@vben/common-ui';
+import { Page, useVbenModal } from '@vben/common-ui';
 
-import { Button, message, Modal } from 'ant-design-vue';
+import { Button } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteFamily, getFamilyList } from '#/api/family';
-import { $t } from '#/locales';
+import { getFamilyList } from '#/api/family';
 
 import { useColumns, useGridFormSchema } from './data';
 import Form from './modules/form.vue';
 
-const [FormDrawer, formDrawerApi] = useVbenDrawer({
+const API_BASE_URL =
+  'https://test-bucket-borochi.s3.eu-central-1.amazonaws.com/';
+const router = useRouter();
+const [FormModal, formModalApi] = useVbenModal({
   connectedComponent: Form,
   destroyOnClose: true,
 });
@@ -31,15 +32,14 @@ const [Grid, gridApi] = useVbenVxeGrid({
     schema: useGridFormSchema(),
     submitOnChange: true,
     showCollapseButton: false,
-    actionWrapperClass: 'pb-0',
+    actionWrapperClass: 'inline-flex items-center gap-3',
     layout: 'inline',
-    wrapperClass: 'grid-cols-4 pb-0',
+    wrapperClass: 'flex flex-wrap gap-4 pb-0 items-center',
     commonConfig: {
-      // 所有表单项
       componentProps: {
-        class: 'grid-cols-4 pb-0',
+        class: 'w-full',
       },
-      formItemClass: 'grid-cols-4 pb-0',
+      formItemClass: 'flex-none min-w-[160px] max-w-[220px] w-[18%]',
       hideLabel: true,
     },
   },
@@ -77,85 +77,18 @@ const [Grid, gridApi] = useVbenVxeGrid({
 
 function onActionClick(e: OnActionClickParams<FamilyApi.Family>) {
   switch (e.code) {
-    case 'delete': {
-      onDelete(e.row);
-      break;
-    }
-    case 'edit': {
-      onEdit(e.row);
+    case 'view': {
+      onView(e.row);
       break;
     }
   }
 }
 
-/**
- * 将Antd的Modal.confirm封装为promise，方便在异步函数中调用。
- * @param content 提示内容
- * @param title 提示标题
- */
-function confirm(content: string, title: string) {
-  return new Promise((reslove, reject) => {
-    Modal.confirm({
-      content,
-      onCancel() {
-        reject(new Error('已取消'));
-      },
-      onOk() {
-        reslove(true);
-      },
-      title,
-    });
+function onView(row: FamilyApi.Family) {
+  router.push({
+    name: 'FamilyDetail',
+    query: { stationId: String(row.id) },
   });
-}
-
-/**
- * 状态开关即将改变
- * @param newStatus 期望改变的状态值
- * @param row 行数据
- * @returns 返回false则中止改变，返回其他值（undefined、true）则允许改变
- */
-async function onStatusChange(newStatus: 'off' | 'on' | number) {
-  const status: Recordable<string> = {
-    off: '禁用',
-    on: '启用',
-  };
-  try {
-    // 将数字状态转换为字符串
-    const statusValue = newStatus === 1 ? 'on' : 'off';
-    await confirm(
-      `你要将状态切换为 【${status[statusValue] || '未知状态'}】 吗？`,
-      `切换状态`,
-    );
-    // 由于staff接口没有单独的状态更新方法，这里可以在后续添加
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-async function onEdit(row: FamilyApi.Family) {
-  // 打开编辑抽屉
-  formDrawerApi.setData(row).open();
-}
-function onDelete(row: FamilyApi.Family) {
-  const hideLoading = message.loading({
-    content: $t('ui.actionMessage.deleting', [row.installerStationName]),
-    duration: 0,
-    key: 'action_process_msg',
-  });
-  deleteFamily(row.id.toString())
-    .then(() => {
-      message.success({
-        content: $t('ui.actionMessage.deleteSuccess', [
-          row.installerStationName,
-        ]),
-        key: 'action_process_msg',
-      });
-      onRefresh();
-    })
-    .catch(() => {
-      hideLoading();
-    });
 }
 
 function onRefresh() {
@@ -167,7 +100,7 @@ function onRefresh() {
 // }
 
 function onCreate() {
-  formDrawerApi.setData({}).open();
+  formModalApi.setData({}).open();
 }
 
 // 组件挂载时初始化
@@ -177,10 +110,50 @@ onMounted(() => {
 </script>
 <template>
   <Page auto-content-height>
-    <FormDrawer @success="onRefresh" />
+    <FormModal @success="onRefresh" />
     <Grid>
-      <template #submit-before>
+      <template #expand-before>
         <Button type="primary" @click="onCreate">添加</Button>
+      </template>
+      <template #image-url="{ row }">
+        <div class="flex-center h-full">
+          <img
+            v-if="(row as any).installerStationPicture"
+            :src="API_BASE_URL + (row as any).installerStationPicture"
+            :alt="row.installerStationName"
+            class="size-10 rounded-full object-cover"
+          />
+        </div>
+      </template>
+      <template #fault-type="{ row }">
+        <div
+          v-if="row.faultType === 'Error'"
+          class="inline-flex items-center gap-2 text-red-400 font-medium"
+        >
+          <span
+            class="inline-block size-2 rounded-full bg-red-400 ring-2 ring-red-100"
+          ></span>
+          <span>故障</span>
+        </div>
+        <div
+          v-else-if="row.faultType === 'Warning'"
+          class="inline-flex items-center gap-2 text-orange-400 font-medium"
+        >
+          <span
+            class="inline-block size-2 rounded-full bg-orange-400 ring-2 ring-orange-100"
+          ></span>
+          <span>警告</span>
+        </div>
+        <div
+          v-else-if="row.faultType === 'Normal'"
+          class="inline-flex items-center gap-2 text-emerald-400 font-medium"
+        >
+          <span
+            class="inline-block size-2 rounded-full bg-emerald-400 ring-2 ring-emerald-100"
+          ></span>
+          <span>正常</span>
+        </div>
+        <span v-else class="text-slate-400">-</span>
       </template>
     </Grid>
   </Page>

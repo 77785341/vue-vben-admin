@@ -25,7 +25,11 @@ const tokenTheme = computed(() => {
 
   return {
     algorithm,
-    token: tokens,
+    token: {
+      ...tokens,
+      fontFamily:
+        'AppCustomFont, PingFang SC, Microsoft YaHei, Helvetica Neue, Arial, sans-serif',
+    },
   };
 });
 </script>

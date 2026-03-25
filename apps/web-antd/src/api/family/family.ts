@@ -1,6 +1,6 @@
-import { requestClient } from '#/api/request';
-
 import { useUserStore } from '@vben/stores';
+
+import { requestClient } from '#/api/request';
 
 export namespace FamilyApi {
   export interface Family {
@@ -13,6 +13,9 @@ export namespace FamilyApi {
     totalFaultCount: number;
     pvCapacity: any;
     batteryCapacity: any;
+    faultType: string;
+    countryName: string;
+    createTime: string;
     devicesParameters: [
       {
         deviceModel: string;
@@ -26,7 +29,24 @@ export namespace FamilyApi {
   export interface FamilyListParams {
     pageNum: number;
     pageSize: number;
+    country?: string;
+    countryId?: string;
+    faultNum?: number | string;
     installerInfoId?: string;
+    installerStationName?: string;
+    stationName?: string;
+  }
+
+  export interface FamilySubmitParams {
+    country: string;
+    customerEmail?: string;
+    customerName?: string;
+    customerPhone?: string;
+    installerInfoId?: string;
+    installerStationAddress: string;
+    installerStationName: string;
+    installerStationPicture?: string;
+    zipCode: string;
   }
 }
 
@@ -43,8 +63,9 @@ async function getFamilyList(params: FamilyApi.FamilyListParams) {
     '/installerStation/getInstallerStationByPage',
     {
       ...params,
+      // 仅在未选择故障类型时给默认值，避免覆盖筛选条件
+      faultNum: params?.faultNum ?? 0,
       installerInfoId,
-      faultNum: 0,
     },
   );
 }
@@ -63,7 +84,7 @@ async function getFamilyById(id: string) {
  * 创建家庭
  * @param data 家庭数据
  */
-async function createFamily(data: Omit<FamilyApi.Family, 'createTime' | 'id'>) {
+async function createFamily(data: FamilyApi.FamilySubmitParams) {
   return requestClient.post<FamilyApi.Family>(
     '/installerStation/addInstallerStation',
     data,
@@ -75,10 +96,7 @@ async function createFamily(data: Omit<FamilyApi.Family, 'createTime' | 'id'>) {
  * @param id 家庭ID
  * @param data 家庭数据
  */
-async function updateFamily(
-  id: string,
-  data: Omit<FamilyApi.Family, 'createTime' | 'id'>,
-) {
+async function updateFamily(id: string, data: FamilyApi.FamilySubmitParams) {
   return requestClient.post<FamilyApi.Family>(
     `/installerStation/updateInstallerStation/${id}`,
     data,
@@ -95,9 +113,16 @@ async function deleteFamily(id: string) {
   );
 }
 
+// 获取国家下拉列表 get请求，没有参数
+async function getCountryList() {
+  return requestClient.get<{ label: string; value: string }[]>(
+    '/installerStation/getCountryOptions',
+  );
+}
 export {
   createFamily,
   deleteFamily,
+  getCountryList,
   getFamilyById,
   getFamilyList,
   updateFamily,
