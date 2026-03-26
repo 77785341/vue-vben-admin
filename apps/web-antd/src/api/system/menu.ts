@@ -34,10 +34,10 @@ export namespace SystemMenuApi {
     id: string;
     /** 菜单元数据 */
     meta?: {
-      /** 激活菜单路径 */
-      activePath?: string;
       /** 激活时显示的图标 */
       activeIcon?: string;
+      /** 激活菜单路径 */
+      activePath?: string;
       /** 固定在标签栏 */
       affixTab?: boolean;
       /** 在标签栏固定的顺序 */
@@ -70,10 +70,10 @@ export namespace SystemMenuApi {
       noBasicLayout?: boolean;
       /** 是否在新窗口打开 */
       openInNewWindow?: boolean;
-      /** 额外的路由参数 */
-      query?: Recordable<any>;
       /** 菜单排序 */
       order?: number;
+      /** 额外的路由参数 */
+      query?: Recordable<any>;
       /** 菜单标题 */
       title?: string;
     };
