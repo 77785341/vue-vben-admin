@@ -29,12 +29,17 @@ defineProps<{
     </div>
     <div class="mt-2 space-y-2">
       <div class="flex items-center gap-2 text-slate-700">
-        <span class="text-[20px] leading-none font-semibold">{{ stationName }}</span>
+        <span class="text-[20px] leading-none font-semibold">{{
+          stationName
+        }}</span>
         <span
           class="mt-1 inline-flex -translate-y-px items-center gap-1.5 text-[14px]"
           :class="onlineInfo.text"
         >
-          <span class="inline-block size-2 rounded-full" :class="onlineInfo.dot"></span>
+          <span
+            class="inline-block size-2 rounded-full"
+            :class="onlineInfo.dot"
+          ></span>
           {{ onlineInfo.label }}
         </span>
       </div>

@@ -23,7 +23,9 @@ const emit = defineEmits<{
   'update:trendDate': [value: string];
 }>();
 
-function handleDateChange(value: string | { format: (pattern?: string) => string }) {
+function handleDateChange(
+  value: string | { format: (pattern?: string) => string },
+) {
   if (!value) return;
   emit('update:trendDate', typeof value === 'string' ? value : value.format());
 }

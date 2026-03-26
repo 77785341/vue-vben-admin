@@ -38,8 +38,17 @@ const actionIcons = {
         @update:value="emit('update:deviceType', $event as string)"
       />
       <Button class="device-filter-btn" @click="emit('reset')">重置</Button>
-      <Button class="device-filter-btn" type="primary" ghost @click="emit('search')">查询</Button>
-      <Button class="device-filter-btn" type="primary" @click="emit('search')">添加</Button>
+      <Button
+        class="device-filter-btn"
+        type="primary"
+        ghost
+        @click="emit('search')"
+        >
+查询
+</Button>
+      <Button class="device-filter-btn" type="primary" @click="emit('search')">
+添加
+</Button>
     </div>
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <div
@@ -50,7 +59,9 @@ const actionIcons = {
         <div class="flex flex-1 items-start gap-3">
           <div class="device-image-wrap shrink-0">
             <img
-              :src="item.image || '/images/family/family-device-inverter@2x.png'"
+              :src="
+                item.image || '/images/family/family-device-inverter@2x.png'
+              "
               :alt="item.title"
               class="device-image"
             />
@@ -59,7 +70,9 @@ const actionIcons = {
             <div class="text-[17px] font-bold leading-snug text-[#1a2636]">
               {{ item.title }}
             </div>
-            <div class="mt-2 break-all text-[13px] leading-normal text-[#7a8fa6]">
+            <div
+              class="mt-2 break-all text-[13px] leading-normal text-[#7a8fa6]"
+            >
               {{ item.sn }}
             </div>
             <div class="mt-2 flex flex-wrap items-center gap-x-4 text-[13px]">

@@ -35,7 +35,9 @@ defineProps<{
 </script>
 
 <template>
-  <div class="relative mx-auto h-full min-h-[18rem] w-full max-w-full rounded-xl xl:mx-0">
+  <div
+    class="relative mx-auto h-full min-h-[18rem] w-full max-w-full rounded-xl xl:mx-0"
+  >
     <!-- 能流路径层：负责绘制主干线、分支线和流动粒子动画 -->
     <svg
       class="pointer-events-none absolute inset-0 h-full w-full"
@@ -159,7 +161,12 @@ defineProps<{
           keyPoints="0;0;1"
           keyTimes="0;0.5;1"
           :path="
-            getFlowMotionPath(item.flowStatus, 'out', item.path.forwardPath, item.path.reversePath)
+            getFlowMotionPath(
+              item.flowStatus,
+              'out',
+              item.path.forwardPath,
+              item.path.reversePath,
+            )
           "
         />
         <animate
@@ -173,12 +180,21 @@ defineProps<{
     </svg>
 
     <!-- 中央房屋主体 -->
-    <div class="absolute left-1/2 top-1/2 h-[39.49%] w-[60%] -translate-x-1/2 -translate-y-1/2">
-      <img :src="flowIcons.centerHouse" alt="House" class="h-full w-full object-contain" />
+    <div
+      class="absolute left-1/2 top-1/2 h-[39.49%] w-[60%] -translate-x-1/2 -translate-y-1/2"
+    >
+      <img
+        :src="flowIcons.centerHouse"
+        alt="House"
+        class="h-full w-full object-contain"
+      />
     </div>
 
     <!-- 顶部节点：光伏 -->
-    <div class="absolute text-center" :style="flowNodeStyleConfig.staticNodes.solar">
+    <div
+      class="absolute text-center"
+      :style="flowNodeStyleConfig.staticNodes.solar"
+    >
       <div
         class="mx-auto mb-1 flex h-6 w-6 items-center justify-center sm:h-7 sm:w-7 md:h-8 md:w-8"
       >
@@ -188,15 +204,22 @@ defineProps<{
           class="h-6 w-6 object-contain sm:h-7 sm:w-7 md:h-8 md:w-8"
         />
       </div>
-      <div class="text-[10px] text-[#6C7680] sm:text-[11px] md:text-[12px]">Solar</div>
-      <div class="text-[12px] font-semibold text-[#303940] sm:text-[14px] md:text-[15px]">
+      <div class="text-[10px] text-[#6C7680] sm:text-[11px] md:text-[12px]">
+        Solar
+      </div>
+      <div
+        class="text-[12px] font-semibold text-[#303940] sm:text-[14px] md:text-[15px]"
+      >
         {{ formatNumber(powerVo.pv_power)
         }}<span class="text-[10px] font-normal sm:text-[11px]">kW</span>
       </div>
     </div>
 
     <!-- 左侧节点：电网 -->
-    <div class="absolute text-center" :style="flowNodeStyleConfig.staticNodes.grid">
+    <div
+      class="absolute text-center"
+      :style="flowNodeStyleConfig.staticNodes.grid"
+    >
       <div
         class="mx-auto mb-1 flex h-6 w-6 items-center justify-center sm:h-7 sm:w-7 md:h-8 md:w-8"
       >
@@ -206,15 +229,22 @@ defineProps<{
           class="h-6 w-6 object-contain sm:h-7 sm:w-7 md:h-8 md:w-8"
         />
       </div>
-      <div class="text-[10px] text-[#6C7680] sm:text-[11px] md:text-[12px]">Grid</div>
-      <div class="text-[12px] font-semibold text-[#303940] sm:text-[14px] md:text-[15px]">
+      <div class="text-[10px] text-[#6C7680] sm:text-[11px] md:text-[12px]">
+        Grid
+      </div>
+      <div
+        class="text-[12px] font-semibold text-[#303940] sm:text-[14px] md:text-[15px]"
+      >
         {{ formatNumber(gridPowerDisplay)
         }}<span class="text-[10px] font-normal sm:text-[11px]">kW</span>
       </div>
     </div>
 
     <!-- 右侧节点：电池 -->
-    <div class="absolute text-center" :style="flowNodeStyleConfig.staticNodes.battery">
+    <div
+      class="absolute text-center"
+      :style="flowNodeStyleConfig.staticNodes.battery"
+    >
       <div
         class="mx-auto mb-1 flex h-6 w-6 items-center justify-center sm:h-7 sm:w-7 md:h-8 md:w-8"
       >
@@ -224,8 +254,12 @@ defineProps<{
           class="h-6 w-6 object-contain sm:h-7 sm:w-7 md:h-8 md:w-8"
         />
       </div>
-      <div class="text-[10px] text-[#6C7680] sm:text-[11px] md:text-[12px]">Battery</div>
-      <div class="text-[12px] font-semibold text-[#303940] sm:text-[14px] md:text-[15px]">
+      <div class="text-[10px] text-[#6C7680] sm:text-[11px] md:text-[12px]">
+        Battery
+      </div>
+      <div
+        class="text-[12px] font-semibold text-[#303940] sm:text-[14px] md:text-[15px]"
+      >
         {{ formatNumber(batteryPower)
         }}<span class="text-[10px] font-normal sm:text-[11px]">kW</span>
       </div>
@@ -237,7 +271,10 @@ defineProps<{
         v-for="item in bottomFlowNodes"
         :key="item.id"
         class="absolute text-center"
-        :style="flowNodeStyleConfig.bottomById[item.id] ?? flowNodeStyleConfig.bottomDefault"
+        :style="
+          flowNodeStyleConfig.bottomById[item.id] ??
+          flowNodeStyleConfig.bottomDefault
+        "
       >
         <div
           class="mx-auto mb-1 flex h-6 w-6 items-center justify-center sm:h-7 sm:w-7 md:h-8 md:w-8"
@@ -248,8 +285,12 @@ defineProps<{
             class="h-6 w-6 object-contain sm:h-7 sm:w-7 md:h-8 md:w-8"
           />
         </div>
-        <div class="text-[10px] text-[#6C7680] sm:text-[11px] md:text-[12px]">{{ item.label }}</div>
-        <div class="text-[12px] font-semibold text-[#303940] sm:text-[14px] md:text-[15px]">
+        <div class="text-[10px] text-[#6C7680] sm:text-[11px] md:text-[12px]">
+          {{ item.label }}
+        </div>
+        <div
+          class="text-[12px] font-semibold text-[#303940] sm:text-[14px] md:text-[15px]"
+        >
           {{ formatNumber(item.power)
           }}<span class="text-[10px] font-normal sm:text-[11px]">kW</span>
         </div>
