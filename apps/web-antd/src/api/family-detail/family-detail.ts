@@ -31,6 +31,7 @@ export namespace FamilyDetailApi {
   }
 
   export type TrendStatisticsData = Record<string, unknown>;
+  export type StationDeviceItem = Record<string, unknown>;
 }
 
 /**
@@ -76,8 +77,26 @@ async function getYearStatistics(year: string, stationId: string) {
   );
 }
 
+/**
+ * 按电站和设备类型查询设备列表
+ * @param stationId 电站ID
+ * @param type 设备类型
+ */
+async function getDeviceByStationAndType(stationId: string, type: string) {
+  return requestClient.get<FamilyDetailApi.StationDeviceItem[]>(
+    `/installerStation/getDeviceByStationAndType`,
+    {
+      params: {
+        stationId,
+        type,
+      },
+    },
+  );
+}
+
 export {
   getDailyStatistics,
+  getDeviceByStationAndType,
   getMonthStatistics,
   getStationMonitor,
   getYearStatistics,

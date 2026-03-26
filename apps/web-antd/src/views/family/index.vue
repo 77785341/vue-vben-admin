@@ -87,7 +87,7 @@ function onActionClick(e: OnActionClickParams<FamilyApi.Family>) {
 function onView(row: FamilyApi.Family) {
   router.push({
     name: 'FamilyDetail',
-    query: { stationId: String(row.id) },
+    query: { stationId: String(row.installerStationId), familyId: String(row.id) },
   });
 }
 

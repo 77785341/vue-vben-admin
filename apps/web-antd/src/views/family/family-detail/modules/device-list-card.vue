@@ -1,44 +1,154 @@
 <script lang="ts" setup>
-import { Button } from 'ant-design-vue';
+import { Button, Select } from 'ant-design-vue';
 
 defineProps<{
   deviceCards: Array<{
     fault: string;
+    image?: string;
     key: string;
     sn: string;
     status: string;
     title: string;
   }>;
+  deviceType?: string;
+  deviceTypeOptions?: Array<{ label: string; value: string }>;
 }>();
+
+const emit = defineEmits<{
+  reset: [];
+  search: [];
+  'update:deviceType': [value: string];
+}>();
+
+const actionIcons = {
+  delete: '/images/family/family-device-action-delete@2x.png',
+  view: '/images/family/family-device-action-view@2x.png',
+};
 </script>
 
 <template>
   <div class="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
-    <div class="mb-3 flex items-center gap-2">
-      <Button size="small">设备类型</Button>
-      <Button size="small">重置</Button>
-      <Button size="small" type="primary">查询</Button>
-      <Button size="small" type="primary">添加</Button>
+    <div class="mb-4 flex items-center gap-2">
+      <Select
+        :options="deviceTypeOptions"
+        :value="deviceType"
+        class="device-filter-select w-[180px]"
+        placeholder="设备类型"
+        allow-clear
+        @update:value="emit('update:deviceType', $event as string)"
+      />
+      <Button class="device-filter-btn" @click="emit('reset')">重置</Button>
+      <Button class="device-filter-btn" type="primary" ghost @click="emit('search')">查询</Button>
+      <Button class="device-filter-btn" type="primary" @click="emit('search')">添加</Button>
     </div>
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <div
         v-for="item in deviceCards"
         :key="item.key"
-        class="rounded-xl border border-slate-100 bg-slate-50 p-3"
+        class="device-card flex flex-col rounded-xl border border-slate-100 bg-white p-4 shadow-sm"
       >
-        <div class="mb-2 text-sm font-semibold text-slate-700">
-          {{ item.title }}
+        <div class="flex flex-1 items-start gap-3">
+          <div class="device-image-wrap shrink-0">
+            <img
+              :src="item.image || '/images/family/family-device-inverter@2x.png'"
+              :alt="item.title"
+              class="device-image"
+            />
+          </div>
+          <div class="flex min-w-0 flex-1 flex-col">
+            <div class="text-[17px] font-bold leading-snug text-[#1a2636]">
+              {{ item.title }}
+            </div>
+            <div class="mt-2 break-all text-[13px] leading-normal text-[#7a8fa6]">
+              {{ item.sn }}
+            </div>
+            <div class="mt-2 flex flex-wrap items-center gap-x-4 text-[13px]">
+              <span class="text-[#22c55e]">● 在线</span>
+              <span v-if="item.fault" class="text-[#ff6b6b]">● 故障 {{ item.fault }}</span>
+            </div>
+          </div>
         </div>
-        <div class="text-xs text-slate-400">{{ item.sn }}</div>
-        <div class="mt-2 flex items-center gap-4 text-xs">
-          <span class="text-emerald-500">● {{ item.status }}</span>
-          <span class="text-rose-400">● {{ item.fault }}</span>
-        </div>
-        <div class="mt-3 flex gap-2">
-          <Button danger size="small">Delete</Button>
-          <Button size="small">View</Button>
+        <div class="mt-4 grid grid-cols-2 gap-3">
+          <button class="device-action-btn device-action-delete">
+            <img :src="actionIcons.delete" alt="delete" class="action-icon" />
+            Delate
+          </button>
+          <button class="device-action-btn device-action-view">
+            <img :src="actionIcons.view" alt="view" class="action-icon" />
+            View
+          </button>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.device-filter-select :deep(.ant-select-selector) {
+  height: 36px !important;
+  border-radius: 6px !important;
+}
+
+.device-filter-select :deep(.ant-select-selection-item),
+.device-filter-select :deep(.ant-select-selection-placeholder) {
+  line-height: 34px !important;
+}
+
+.device-filter-btn {
+  height: 36px;
+  padding: 0 14px;
+  line-height: 34px;
+  border-radius: 6px;
+}
+
+.device-card {
+  min-height: 0;
+}
+
+.device-image-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 110px;
+  height: 110px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+}
+
+.device-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.device-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid;
+  border-radius: 999px;
+}
+
+.device-action-delete {
+  color: #ff7b7b;
+  background: #fff7f7;
+  border-color: #fecaca;
+}
+
+.device-action-view {
+  color: #4a90e2;
+  background: #f3f9ff;
+  border-color: #bfdbfe;
+}
+
+.action-icon {
+  width: 14px;
+  height: 14px;
+  margin-right: 4px;
+  object-fit: contain;
+}
+</style>

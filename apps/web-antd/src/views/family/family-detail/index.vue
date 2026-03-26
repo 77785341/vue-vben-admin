@@ -11,6 +11,7 @@ import { message, Skeleton } from 'ant-design-vue';
 
 import {
   getDailyStatistics,
+  getDeviceByStationAndType,
   getMonthStatistics,
   getStationMonitor,
   getYearStatistics,
@@ -23,13 +24,14 @@ import FlowDiagramCard from './modules/flow-diagram-card.vue';
 import GenerationSummaryPanel from './modules/generation-summary-panel.vue';
 import TrendStatisticsCard from './modules/trend-statistics-card.vue';
 
-const API_BASE_URL =
-  'https://test-bucket-borochi.s3.eu-central-1.amazonaws.com/';
+const API_BASE_URL = 'https://test-bucket-borochi.s3.eu-central-1.amazonaws.com/';
 
 const route = useRoute();
 const familyId = ref<string>('');
+const stationId = ref<string>('');
 const familyData = ref<any>(null);
 const monitorData = ref<any>(null);
+const stationDevicesRaw = ref<any[]>([]);
 const loading = ref(true);
 const chartRef = ref<EchartsUIType>();
 const { renderEcharts } = useEcharts(chartRef);
@@ -45,6 +47,7 @@ type TrendStatisticsSeries = {
   color?: string;
   data?: number[];
   dateTime?: string[];
+  isDefault?: boolean;
   name?: string;
   time?: string[];
 };
@@ -55,32 +58,59 @@ function getFlowMotionPath(
   forwardPath: string,
   reversePath: string,
 ) {
+  // 根据流向状态选择动画路径，静止状态不渲染运动轨迹。
   if (status === 'dis') {
     return '';
   }
   return status === forwardStatus ? forwardPath : reversePath;
 }
 
+const FLOW_VIEWBOX_SIZE = 390;
+
+function toPercent(value: number) {
+  return `${(value / FLOW_VIEWBOX_SIZE) * 100}%`;
+}
+
+function buildNodeStyle(x: number, y: number) {
+  return {
+    left: toPercent(x),
+    top: toPercent(y),
+    transform: 'translateX(-50%)',
+  };
+}
+
+const flowNodeStyleConfig = {
+  bottomById: {
+    'heat-pump': buildNodeStyle(195, 315),
+    household: buildNodeStyle(275, 315),
+    wallbox: buildNodeStyle(115, 315),
+  },
+  bottomDefault: buildNodeStyle(195, 310),
+  staticNodes: {
+    battery: buildNodeStyle(330, 120),
+    grid: buildNodeStyle(79, 180),
+    solar: buildNodeStyle(195, 8),
+  },
+} as const;
+
+// 兼容不同接口层级：station -> familyInfo -> 根对象。
 const stationBase = computed(() => {
-  return (
-    familyData.value?.station ??
-    familyData.value?.familyInfo ??
-    familyData.value ??
-    {}
-  );
+  return familyData.value?.station ?? familyData.value?.familyInfo ?? familyData.value ?? {};
 });
 
 const stationName = computed(
-  () =>
-    stationBase.value?.installerStationName ??
-    stationBase.value?.familyName ??
-    '--',
+  () => stationBase.value?.installerStationName ?? stationBase.value?.familyName ?? '--',
 );
 
 const stationAddress = computed(
+  () => stationBase.value?.installerStationAddress ?? stationBase.value?.address ?? '--',
+);
+
+const stationPhone = computed(
   () =>
-    stationBase.value?.installerStationAddress ??
-    stationBase.value?.address ??
+    stationBase.value?.customerPhone ??
+    stationBase.value?.phone ??
+    stationBase.value?.mobile ??
     '--',
 );
 
@@ -195,6 +225,7 @@ const batteryFlowStatus = computed<FlowStatus>(() => batteryStatus.value);
 const wallboxFlowStatus = computed<FlowStatus>(() => chargingPileStatus.value);
 const heatPumpFlowStatus = computed<FlowStatus>(() => illuminationStatus.value);
 const householdFlowStatus = computed<FlowStatus>(() => inverterStatus.value);
+// 底部主干有任一负载用电则判定为向外流动。
 const bottomTrunkStatus = computed<FlowStatus>(() => {
   if (
     wallboxFlowStatus.value === 'out' ||
@@ -208,39 +239,39 @@ const bottomTrunkStatus = computed<FlowStatus>(() => {
 
 const flowPathConfig = {
   battery: {
-    base: 'M203 228 L361 228 L361 194',
-    forwardPath: 'M361 194 L361 228 L203 228',
-    reversePath: 'M203 228 L361 228 L361 194',
+    base: 'M260 228 L330 228 L330 194',
+    forwardPath: 'M330 194 L330 228 L260 228',
+    reversePath: 'M260 228 L330 228 L330 194',
   },
   grid: {
-    base: 'M29 228 L29 194 L187 194',
-    forwardPath: 'M29 228 L29 194 L187 194',
-    reversePath: 'M187 194 L29 194 L29 228',
+    base: 'M79 173 L79 139 L156 139',
+    forwardPath: 'M79 173 L79 139 L156 139',
+    reversePath: 'M156 139 L79 139 L79 173',
   },
   bottomTrunk: {
-    base: 'M195 254 L195 294',
-    forwardPath: 'M195 254 L195 294',
-    reversePath: 'M195 294 L195 254',
+    base: 'M195 268 L195 288',
+    forwardPath: 'M195 268 L195 288',
+    reversePath: 'M195 288 L195 268',
   },
   heatPump: {
-    base: 'M195 294 L195 324',
-    forwardPath: 'M195 294 L195 324',
-    reversePath: 'M195 324 L195 294',
+    base: 'M195 288 L195 310',
+    forwardPath: 'M195 288 L195 310',
+    reversePath: 'M195 310 L195 288',
   },
   household: {
-    base: 'M195 294 L315 294 L315 324',
-    forwardPath: 'M195 294 L315 294 L315 324',
-    reversePath: 'M315 324 L315 294 L195 294',
-  },
-  solar: {
-    base: 'M195 64 L195 166',
-    forwardPath: 'M195 64 L195 166',
-    reversePath: 'M195 166 L195 64',
+    base: 'M195 288 L275 288 L275 310',
+    forwardPath: 'M195 288 L275 288 L275 310',
+    reversePath: 'M275 310 L275 288 L195 288',
   },
   wallbox: {
-    base: 'M195 294 L75 294 L75 324',
-    forwardPath: 'M195 294 L75 294 L75 324',
-    reversePath: 'M75 324 L75 294 L195 294',
+    base: 'M195 288 L115 288 L115 310',
+    forwardPath: 'M195 288 L115 288 L115 310',
+    reversePath: 'M115 310 L115 288 L195 288',
+  },
+  solar: {
+    base: 'M195 80 L195 125',
+    forwardPath: 'M195 80 L195 125',
+    reversePath: 'M195 125 L195 80',
   },
 } as const;
 
@@ -257,7 +288,7 @@ const bottomFlowNodes = computed(() => {
       label: 'Wallbox',
       path: flowPathConfig.wallbox,
       power: Number(powerUseVo.value?.wallboxPower ?? 0),
-      offset: -120,
+      offset: -80,
       color: '#FF6B6B',
     },
     {
@@ -277,7 +308,7 @@ const bottomFlowNodes = computed(() => {
       label: 'Household',
       path: flowPathConfig.household,
       power: Number(powerUseVo.value?.otherUsePower ?? 0),
-      offset: 120,
+      offset: 80,
       color: '#2ECE89',
     },
   ];
@@ -288,27 +319,84 @@ const activeBottomFlowNodes = computed(() =>
 );
 
 const flowIcons = {
-  battery: '/images/family/daily-generation.png',
-  grid: '/images/family/daily-generation.png',
-  heatPump: '/images/family/daily-generation.png',
-  household: '/images/family/daily-generation.png',
-  solar: '/images/family/daily-generation.png',
-  wallbox: '/images/family/daily-generation.png',
+  battery: '/images/family/family-icon-battery@2x.png',
+  centerHouse: '/images/family/family-house-center-black@2x.png',
+  grid: '/images/family/family-icon-grid@2x.png',
+  heatPump: '/images/family/family-icon-heat-pump@2x.png',
+  household: '/images/family/family-icon-household@2x.png',
+  solar: '/images/family/family-icon-solar@2x.png',
+  wallbox: '/images/family/family-icon-wallbox@2x.png',
 };
 
+type DeviceTypeKey = 'inverters' | 'pumps' | 'wallboxes';
+
+const deviceTypeOptions = [
+  { label: '光储系统', value: 'inverters' },
+  { label: '热泵', value: 'pumps' },
+  { label: '充电桩', value: 'wallboxes' },
+];
+
+const deviceTypeImageMap: Record<DeviceTypeKey, string> = {
+  inverters: '/images/family/family-device-inverter@2x.png',
+  pumps: '/images/family/family-device-heat-pump@2x.png',
+  wallboxes: '/images/family/family-device-wallbox@2x.png',
+};
+
+const deviceTypeQuery = ref<string>('');
+
+function resolveDeviceTypeKey(typeValue: unknown): DeviceTypeKey | null {
+  const normalized = String(typeValue ?? '')
+    .trim()
+    .toLowerCase();
+  if (!normalized) return null;
+
+  if (['1', 'inverter', 'inverters', 'pv', 'solar'].includes(normalized)) {
+    return 'inverters';
+  }
+  if (['2', 'heat-pump', 'heatpump', 'pump', 'pumps'].includes(normalized)) {
+    return 'pumps';
+  }
+  if (['3', 'charger', 'wallbox', 'wallboxes'].includes(normalized)) {
+    return 'wallboxes';
+  }
+  return null;
+}
+
+async function fetchStationDevices(type = '') {
+  if (!stationId.value) {
+    stationDevicesRaw.value = [];
+    return;
+  }
+
+  const responseData = await getDeviceByStationAndType(stationId.value, type);
+  const payload = Array.isArray(responseData) ? responseData : ((responseData as any)?.data ?? []);
+  if (!Array.isArray(payload)) {
+    stationDevicesRaw.value = [];
+    return;
+  }
+
+  stationDevicesRaw.value = payload.map((item: any) => {
+    const resolvedType =
+      resolveDeviceTypeKey(item?.type) ??
+      resolveDeviceTypeKey(item?.deviceType) ??
+      resolveDeviceTypeKey(type) ??
+      'inverters';
+    return { ...item, __type: resolvedType };
+  });
+}
+
+function handleDeviceTypeSearch(type?: string) {
+  void fetchStationDevices(type ?? deviceTypeQuery.value);
+}
+
+function handleDeviceTypeReset() {
+  deviceTypeQuery.value = '';
+  void fetchStationDevices('');
+}
+
+// 设备列表做多字段兼容，避免后端字段命名不一致导致展示空值。
 const deviceCards = computed(() => {
-  const station = familyData.value ?? {};
-  const source = [
-    ...(Array.isArray(station?.inverters)
-      ? station.inverters.map((item: any) => ({ ...item, __type: 'inverters' }))
-      : []),
-    ...(Array.isArray(station?.pumps)
-      ? station.pumps.map((item: any) => ({ ...item, __type: 'pumps' }))
-      : []),
-    ...(Array.isArray(station?.wallboxes)
-      ? station.wallboxes.map((item: any) => ({ ...item, __type: 'wallboxes' }))
-      : []),
-  ];
+  const source = stationDevicesRaw.value;
 
   const typeNameMap: Record<string, string> = {
     inverters: '光储系统',
@@ -323,13 +411,14 @@ const deviceCards = computed(() => {
   };
 
   return source.map((item: any, index: number) => {
-    const snField = typeSnFieldMap[item?.__type] ?? '';
-    const rawSn =
-      item?.[snField] ??
-      item?.deviceSn ??
-      item?.sn ??
-      item?.serialNumber ??
-      '--';
+    const resolvedTypeKey =
+      resolveDeviceTypeKey(item?.type) ??
+      resolveDeviceTypeKey(item?.deviceType) ??
+      resolveDeviceTypeKey(item?.__type) ??
+      'inverters';
+
+    const snField = typeSnFieldMap[resolvedTypeKey] ?? '';
+    const rawSn = item?.[snField] ?? item?.deviceSn ?? item?.sn ?? item?.serialNumber ?? '--';
     const rawStatus = item?.status ?? item?.onlineStatus ?? item?.state;
     let status = String(rawStatus ?? '未知');
     if (
@@ -348,20 +437,16 @@ const deviceCards = computed(() => {
       status = '离线';
     }
 
-    const rawFault =
-      item?.faultCount ??
-      item?.faultNum ??
-      item?.alarmCount ??
-      item?.fault ??
-      0;
+    const rawFault = item?.faultCount ?? item?.faultNum ?? item?.alarmCount ?? item?.fault ?? 0;
     const faultCount = Number(rawFault);
 
     return {
       key: `${rawSn}-${index}`,
-      title: typeNameMap[item?.__type] ?? '设备',
+      title: item?.deviceName || typeNameMap[resolvedTypeKey] || '设备',
       sn: `SN:${rawSn}`,
       status,
-      fault: `故障 ${Number.isFinite(faultCount) ? faultCount : 0}`,
+      fault: `${Number.isFinite(faultCount) ? faultCount : 0}`,
+      image: deviceTypeImageMap[resolvedTypeKey],
     };
   });
 });
@@ -393,10 +478,8 @@ const trendDateFormat = computed(() => {
   return 'YYYY-MM-DD';
 });
 
-function normalizeSeriesData(
-  source: unknown,
-  length: number,
-): Array<null | number> {
+function normalizeSeriesData(source: unknown, length: number): Array<null | number> {
+  // 保留 null，图表端展示断点而不是补 0，避免误导趋势判断。
   if (Array.isArray(source)) {
     const numbers = source
       .map((item) => {
@@ -404,10 +487,7 @@ function normalizeSeriesData(
         if (typeof item === 'number') return item;
         if (item && typeof item === 'object') {
           const value =
-            (item as any).value ??
-            (item as any).data ??
-            (item as any).y ??
-            (item as any).amount;
+            (item as any).value ?? (item as any).data ?? (item as any).y ?? (item as any).amount;
           if (value === null || value === undefined) return null;
           const parsedValue = Number(value);
           return Number.isFinite(parsedValue) ? parsedValue : null;
@@ -415,32 +495,20 @@ function normalizeSeriesData(
         const parsedValue = Number(item);
         return Number.isFinite(parsedValue) ? parsedValue : null;
       })
-      .map((item) =>
-        item === null || item === undefined || Number.isFinite(item)
-          ? item
-          : null,
-      );
+      .map((item) => (item === null || item === undefined || Number.isFinite(item) ? item : null));
 
     if (numbers.length >= length) return numbers.slice(0, length);
-    return [
-      ...numbers,
-      ...Array.from({ length: length - numbers.length }, () => null),
-    ];
+    return [...numbers, ...Array.from({ length: length - numbers.length }, () => null)];
   }
 
   if (source && typeof source === 'object') {
-    const objectValues = Object.values(source as Record<string, unknown>).map(
-      (item) => {
-        if (item === null || item === undefined) return null;
-        const numberValue = Number(item);
-        return Number.isFinite(numberValue) ? numberValue : null;
-      },
-    );
+    const objectValues = Object.values(source as Record<string, unknown>).map((item) => {
+      if (item === null || item === undefined) return null;
+      const numberValue = Number(item);
+      return Number.isFinite(numberValue) ? numberValue : null;
+    });
     if (objectValues.length >= length) return objectValues.slice(0, length);
-    return [
-      ...objectValues,
-      ...Array.from({ length: length - objectValues.length }, () => null),
-    ];
+    return [...objectValues, ...Array.from({ length: length - objectValues.length }, () => null)];
   }
 
   return Array.from({ length }, () => null);
@@ -450,12 +518,7 @@ function getDaysInTrendMonth(value: string) {
   const [yearString, monthString] = value.split('-');
   const year = Number(yearString);
   const month = Number(monthString);
-  if (
-    !Number.isFinite(year) ||
-    !Number.isFinite(month) ||
-    month < 1 ||
-    month > 12
-  ) {
+  if (!Number.isFinite(year) || !Number.isFinite(month) || month < 1 || month > 12) {
     return 30;
   }
   return new Date(year, month, 0).getDate();
@@ -468,17 +531,15 @@ function handleTrendPeriodChange(period: TrendPeriod) {
   void fetchTrendStatistics();
 }
 
-function handleTrendDateChange(
-  value: string | { format: (pattern?: string) => string },
-) {
+function handleTrendDateChange(value: string | { format: (pattern?: string) => string }) {
   if (!value) return;
-  trendDate.value =
-    typeof value === 'string' ? value : value.format(trendDateFormat.value);
+  trendDate.value = typeof value === 'string' ? value : value.format(trendDateFormat.value);
   void fetchTrendStatistics();
 }
 
 async function fetchTrendStatistics() {
-  if (!familyId.value) {
+  // 统计接口必须使用 stationId；无 stationId 时清空图表。
+  if (!stationId.value) {
     trendStatisticsRaw.value = [];
     renderTrendChart();
     return;
@@ -487,16 +548,14 @@ async function fetchTrendStatistics() {
   try {
     let response: unknown;
     if (trendPeriod.value === 'day') {
-      response = await getDailyStatistics(trendDate.value, familyId.value);
+      response = await getDailyStatistics(trendDate.value, stationId.value);
     } else if (trendPeriod.value === 'month') {
-      response = await getMonthStatistics(trendDate.value, familyId.value);
+      response = await getMonthStatistics(trendDate.value, stationId.value);
     } else {
-      response = await getYearStatistics(trendDate.value, familyId.value);
+      response = await getYearStatistics(trendDate.value, stationId.value);
     }
-    const apiData = ((response as any)?.data ?? []) as unknown;
-    trendStatisticsRaw.value = Array.isArray(apiData)
-      ? (apiData as TrendStatisticsSeries[])
-      : [];
+    const apiData = (Array.isArray(response) ? response : (response as any)?.data) as unknown;
+    trendStatisticsRaw.value = Array.isArray(apiData) ? (apiData as TrendStatisticsSeries[]) : [];
   } catch (error) {
     console.error('获取统计图数据失败:', error);
     trendStatisticsRaw.value = [];
@@ -511,7 +570,7 @@ function renderTrendChart() {
   const isMonth = trendPeriod.value === 'month';
   let xData: string[] = [];
   if (isDay) {
-    xData = Array.from({ length: 24 }).map(
+    xData = Array.from({ length: 25 }).map(
       (_item, index) => `${String(index).padStart(2, '0')}:00`,
     );
   } else if (isMonth) {
@@ -532,10 +591,54 @@ function renderTrendChart() {
   ];
 
   const apiSeries = trendStatisticsRaw.value;
-  const axisSource = apiSeries[0];
-  const apiAxis = isDay ? axisSource?.time : axisSource?.dateTime;
-  if (Array.isArray(apiAxis) && apiAxis.length > 0) {
-    xData = apiAxis.map(String);
+  const normalizeDayAxisLabel = (value: string) => {
+    const text = String(value);
+    if (text.includes(' ')) {
+      return text.split(' ')[1]?.slice(0, 5) || text;
+    }
+    if (text.includes('T')) {
+      return text.split('T')[1]?.slice(0, 5) || text;
+    }
+    return text.slice(0, 5);
+  };
+
+  // 日维度使用 time，月/年维度使用 dateTime；按接口时间轴统一对齐数据。
+  const getSeriesAxis = (seriesItem?: TrendStatisticsSeries) => {
+    const axis = isDay ? seriesItem?.time : seriesItem?.dateTime;
+    if (!Array.isArray(axis)) return [];
+    return axis.map((item) => {
+      const rawValue = String(item);
+      return isDay ? normalizeDayAxisLabel(rawValue) : rawValue;
+    });
+  };
+
+  const mergedAxis: string[] = [];
+  apiSeries.forEach((seriesItem, index) => {
+    const currentAxis = getSeriesAxis(seriesItem);
+    if (currentAxis.length === 0) {
+      return;
+    }
+    if (index === 0 && mergedAxis.length === 0) {
+      mergedAxis.push(...currentAxis);
+      return;
+    }
+    currentAxis.forEach((axisValue) => {
+      if (!mergedAxis.includes(axisValue)) {
+        mergedAxis.push(axisValue);
+      }
+    });
+  });
+
+  if (mergedAxis.length > 0) {
+    if (isDay) {
+      if (!mergedAxis.includes('00:00')) {
+        mergedAxis.unshift('00:00');
+      }
+      if (!mergedAxis.includes('24:00')) {
+        mergedAxis.push('24:00');
+      }
+    }
+    xData = mergedAxis;
   }
 
   let barStyle = {};
@@ -556,13 +659,35 @@ function renderTrendChart() {
   }
 
   const seriesSource = apiSeries;
+  const yAxisUnit = isDay ? 'kW' : 'kWh';
 
   const series = seriesSource.map((seriesItem, index) => {
     const fallback = defaultSeriesMeta[index] ?? {
       color: '#89C0FF',
       name: `Series ${index + 1}`,
     };
-    const data = normalizeSeriesData(seriesItem?.data, xData.length);
+    const seriesAxis = getSeriesAxis(seriesItem);
+    let data: Array<null | number>;
+
+    if (seriesAxis.length > 0 && Array.isArray(seriesItem?.data)) {
+      const valueByAxis: Record<string, null | number> = {};
+      seriesAxis.forEach((axisValue, axisIndex) => {
+        const rawValue = seriesItem.data?.[axisIndex];
+        if (rawValue === null || rawValue === undefined) {
+          valueByAxis[axisValue] = null;
+          return;
+        }
+        const parsedValue = Number(rawValue);
+        valueByAxis[axisValue] = Number.isFinite(parsedValue) ? parsedValue : null;
+      });
+      data = xData.map((axisValue) => {
+        return Object.prototype.hasOwnProperty.call(valueByAxis, axisValue)
+          ? (valueByAxis[axisValue] ?? null)
+          : null;
+      });
+    } else {
+      data = normalizeSeriesData(seriesItem?.data, xData.length);
+    }
 
     return {
       ...barStyle,
@@ -578,19 +703,30 @@ function renderTrendChart() {
     return seriesItem?.color || defaultSeriesMeta[index]?.color || '#89C0FF';
   });
 
+  // 接口 isDefault 控制初始渲染状态，未默认显示的系列可通过底部图例点击显示。
+  const legendSelected: Record<string, boolean> = {};
+  seriesSource.forEach((seriesItem, index) => {
+    const fallbackName = defaultSeriesMeta[index]?.name || `Series ${index + 1}`;
+    const seriesName = seriesItem?.name || fallbackName;
+    legendSelected[seriesName] = seriesItem?.isDefault !== false;
+  });
+
+  const dayAxisFormatter = (value: string) => normalizeDayAxisLabel(value);
+
   renderEcharts({
     color: chartColors,
     grid: {
-      bottom: 20,
+      bottom: 56,
       containLabel: true,
-      left: 0,
-      right: 0,
+      left: 24,
+      right: 16,
       top: 24,
     },
     legend: {
-      bottom: 0,
+      bottom: 4,
       itemHeight: 6,
       itemWidth: 12,
+      selected: legendSelected,
       textStyle: {
         color: '#64748b',
         fontSize: 12,
@@ -601,6 +737,10 @@ function renderTrendChart() {
       trigger: 'axis',
     },
     xAxis: {
+      axisLabel: {
+        color: '#94a3b8',
+        formatter: (value: string) => (isDay ? dayAxisFormatter(value) : value),
+      },
       axisLine: { lineStyle: { color: '#e2e8f0' } },
       axisTick: { show: false },
       data: xData,
@@ -608,6 +748,13 @@ function renderTrendChart() {
     },
     yAxis: {
       axisLabel: { color: '#94a3b8' },
+      name: yAxisUnit,
+      nameGap: 10,
+      nameLocation: 'end',
+      nameTextStyle: {
+        color: '#64748b',
+        fontSize: 12,
+      },
       splitLine: { lineStyle: { color: '#f1f5f9' } },
       type: 'value',
     },
@@ -617,26 +764,29 @@ function renderTrendChart() {
 async function fetchFamilyDetail() {
   try {
     loading.value = true;
-    const id = route.query.stationId as string;
-    if (!id) {
+    // 路由约定：stationId 用于监控/统计，familyId 用于家庭详情。
+    const queryStationId = route.query.stationId as string;
+    const queryFamilyId = route.query.familyId as string;
+    if (!queryStationId && !queryFamilyId) {
       message.error('家庭ID不存在');
       return;
     }
-    familyId.value = id;
+    stationId.value = queryStationId || '';
+    familyId.value = queryFamilyId || queryStationId || '';
     const [familyResponse, monitorResponse] = await Promise.all([
-      getFamilyById(id),
-      getStationMonitor(id),
+      getFamilyById(familyId.value),
+      getStationMonitor(stationId.value),
     ]);
-    const familyPayload =
-      (familyResponse as any)?.data ?? familyResponse ?? null;
+    const familyPayload = (familyResponse as any)?.data ?? familyResponse ?? null;
     familyData.value = familyPayload;
-    monitorData.value =
-      (monitorResponse as any)?.data ?? monitorResponse ?? null;
+    monitorData.value = (monitorResponse as any)?.data ?? monitorResponse ?? null;
+    await fetchStationDevices();
     console.warn('家庭详情数据', familyResponse);
     await fetchTrendStatistics();
   } catch (error) {
     console.error('获取家庭详情失败:', error);
     message.error('获取家庭数据失败');
+    stationDevicesRaw.value = [];
     renderTrendChart();
   } finally {
     loading.value = false;
@@ -652,41 +802,46 @@ onMounted(() => {
     <div class="space-y-4 p-4">
       <div>
         <Skeleton :loading="loading" active>
-          <div class="grid grid-cols-1 gap-4 xl:grid-cols-[398px_1fr]">
+          <div
+            class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(18rem,24%)_minmax(0,1fr)] 2xl:grid-cols-[minmax(20rem,22%)_minmax(0,1fr)]"
+          >
             <FamilyInfoCard
               :create-time="stationBase?.createTime || '--'"
               :customer-name="stationBase?.customerName || 'Mr Li'"
-              :family-id="familyId || '--'"
               :online-info="onlineInfo"
               :station-address="stationAddress"
               :station-name="stationName"
+              :phone="stationPhone"
               :station-picture="stationPicture"
             />
 
-            <div
-              class="rounded-xl bg-white p-3 shadow-sm ring-1 ring-slate-100"
-            >
+            <div class="h-full rounded-xl bg-white p-3 shadow-sm ring-1 ring-slate-100">
               <div
-                class="grid grid-cols-1 gap-4 rounded-xl p-3 2xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.78fr)] 2xl:items-start"
+                class="grid h-full grid-cols-1 gap-4 rounded-xl xl:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] xl:items-stretch"
               >
-                <FlowDiagramCard
-                  :active-bottom-flow-nodes="activeBottomFlowNodes"
-                  :battery-flow-status="batteryFlowStatus"
-                  :battery-power="batteryPower"
-                  :bottom-flow-nodes="bottomFlowNodes"
-                  :bottom-trunk-status="bottomTrunkStatus"
-                  :flow-icons="flowIcons"
-                  :flow-path-config="flowPathConfig"
-                  :format-number="formatNumber"
-                  :get-flow-motion-path="getFlowMotionPath"
-                  :grid-flow-status="gridFlowStatus"
-                  :grid-power-display="gridPowerDisplay"
-                  :is-flow-active="isFlowActive"
-                  :power-vo="powerVo"
-                  :solar-flow-status="solarFlowStatus"
-                />
+                <div class="h-full min-h-0">
+                  <FlowDiagramCard
+                    :active-bottom-flow-nodes="activeBottomFlowNodes"
+                    :battery-flow-status="batteryFlowStatus"
+                    :battery-power="batteryPower"
+                    :bottom-flow-nodes="bottomFlowNodes"
+                    :bottom-trunk-status="bottomTrunkStatus"
+                    :flow-icons="flowIcons"
+                    :flow-node-style-config="flowNodeStyleConfig"
+                    :flow-path-config="flowPathConfig"
+                    :format-number="formatNumber"
+                    :get-flow-motion-path="getFlowMotionPath"
+                    :grid-flow-status="gridFlowStatus"
+                    :grid-power-display="gridPowerDisplay"
+                    :is-flow-active="isFlowActive"
+                    :power-vo="powerVo"
+                    :solar-flow-status="solarFlowStatus"
+                  />
+                </div>
 
-                <GenerationSummaryPanel :summary-cards="summaryCards" />
+                <div class="flex h-full items-center">
+                  <GenerationSummaryPanel :summary-cards="summaryCards" />
+                </div>
               </div>
             </div>
           </div>
@@ -704,7 +859,14 @@ onMounted(() => {
         <EchartsUI ref="chartRef" />
       </TrendStatisticsCard>
 
-      <DeviceListCard :device-cards="deviceCards" />
+      <DeviceListCard
+        :device-cards="deviceCards"
+        :device-type="deviceTypeQuery"
+        :device-type-options="deviceTypeOptions"
+        @reset="handleDeviceTypeReset"
+        @search="handleDeviceTypeSearch"
+        @update:device-type="deviceTypeQuery = $event"
+      />
     </div>
   </Page>
 </template>

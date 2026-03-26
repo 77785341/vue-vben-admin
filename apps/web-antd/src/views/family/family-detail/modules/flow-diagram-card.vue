@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 type LocalFlowStatus = 'dis' | 'in' | 'out';
 
+// 能流图渲染组件：根据父层传入状态决定路径高亮和粒子动画方向。
 defineProps<{
   activeBottomFlowNodes: any[];
   batteryFlowStatus: LocalFlowStatus;
@@ -8,6 +9,15 @@ defineProps<{
   bottomFlowNodes: any[];
   bottomTrunkStatus: LocalFlowStatus;
   flowIcons: Record<string, string>;
+  flowNodeStyleConfig: {
+    bottomById: Record<string, Record<string, string>>;
+    bottomDefault: Record<string, string>;
+    staticNodes: {
+      battery: Record<string, string>;
+      grid: Record<string, string>;
+      solar: Record<string, string>;
+    };
+  };
   flowPathConfig: Record<string, any>;
   formatNumber: (value: unknown, digits?: number) => string;
   getFlowMotionPath: (
@@ -25,12 +35,15 @@ defineProps<{
 </script>
 
 <template>
-  <div class="relative min-h-[390px] rounded-xl bg-[#f5f7fb] p-4">
+  <div class="relative mx-auto h-full min-h-[18rem] w-full max-w-full rounded-xl xl:mx-0">
+    <!-- 能流路径层：负责绘制主干线、分支线和流动粒子动画 -->
     <svg
-      class="pointer-events-none absolute left-1/2 top-0 h-[390px] w-[390px] -translate-x-1/2"
+      class="pointer-events-none absolute inset-0 h-full w-full"
       viewBox="0 0 390 390"
+      preserveAspectRatio="none"
       fill="none"
     >
+      <!-- 光伏主路由 -->
       <path
         class="flow-path"
         :class="{ 'flow-path-active': isFlowActive(solarFlowStatus) }"
@@ -51,6 +64,7 @@ defineProps<{
         />
       </circle>
 
+      <!-- 电网主路由 -->
       <path
         class="flow-path"
         :class="{ 'flow-path-active': isFlowActive(gridFlowStatus) }"
@@ -71,6 +85,7 @@ defineProps<{
         />
       </circle>
 
+      <!-- 电池主路由 -->
       <path
         class="flow-path"
         :class="{ 'flow-path-active': isFlowActive(batteryFlowStatus) }"
@@ -91,6 +106,7 @@ defineProps<{
         />
       </circle>
 
+      <!-- 底部总线（汇总到底部负载区） -->
       <path
         class="flow-path"
         :class="{ 'flow-path-active': isFlowActive(bottomTrunkStatus) }"
@@ -121,6 +137,7 @@ defineProps<{
         />
       </circle>
 
+      <!-- 底部各分支路径和对应粒子动画 -->
       <path
         v-for="item in bottomFlowNodes"
         :key="`path-${item.id}`"
@@ -142,12 +159,7 @@ defineProps<{
           keyPoints="0;0;1"
           keyTimes="0;0.5;1"
           :path="
-            getFlowMotionPath(
-              item.flowStatus,
-              'out',
-              item.path.forwardPath,
-              item.path.reversePath,
-            )
+            getFlowMotionPath(item.flowStatus, 'out', item.path.forwardPath, item.path.reversePath)
           "
         />
         <animate
@@ -160,85 +172,86 @@ defineProps<{
       </circle>
     </svg>
 
-    <div
-      class="absolute left-1/2 top-1/2 h-[124px] w-[160px] -translate-x-1/2 -translate-y-1/2 rounded-xl bg-white p-2.5 shadow-sm ring-1 ring-slate-100"
-    >
-      <div
-        class="h-full w-full rounded-lg bg-gradient-to-br from-slate-100 via-slate-50 to-slate-200"
-      ></div>
+    <!-- 中央房屋主体 -->
+    <div class="absolute left-1/2 top-1/2 h-[39.49%] w-[60%] -translate-x-1/2 -translate-y-1/2">
+      <img :src="flowIcons.centerHouse" alt="House" class="h-full w-full object-contain" />
     </div>
 
-    <div class="absolute left-1/2 top-8 -translate-x-1/2 text-center">
+    <!-- 顶部节点：光伏 -->
+    <div class="absolute text-center" :style="flowNodeStyleConfig.staticNodes.solar">
       <div
-        class="mx-auto mb-1 flex h-[32px] w-[32px] items-center justify-center"
+        class="mx-auto mb-1 flex h-6 w-6 items-center justify-center sm:h-7 sm:w-7 md:h-8 md:w-8"
       >
         <img
           :src="flowIcons.solar"
           alt="Solar"
-          class="h-[32px] w-[32px] object-contain"
+          class="h-6 w-6 object-contain sm:h-7 sm:w-7 md:h-8 md:w-8"
         />
       </div>
-      <div class="text-sm text-slate-500">Solar</div>
-      <div class="text-[28px] font-semibold text-slate-700">
+      <div class="text-[10px] text-[#6C7680] sm:text-[11px] md:text-[12px]">Solar</div>
+      <div class="text-[12px] font-semibold text-[#303940] sm:text-[14px] md:text-[15px]">
         {{ formatNumber(powerVo.pv_power)
-        }}<span class="text-base font-normal">kW</span>
+        }}<span class="text-[10px] font-normal sm:text-[11px]">kW</span>
       </div>
     </div>
 
-    <div class="absolute left-10 top-1/2 -translate-y-1/2 text-center">
+    <!-- 左侧节点：电网 -->
+    <div class="absolute text-center" :style="flowNodeStyleConfig.staticNodes.grid">
       <div
-        class="mx-auto mb-1 flex h-[32px] w-[32px] items-center justify-center"
+        class="mx-auto mb-1 flex h-6 w-6 items-center justify-center sm:h-7 sm:w-7 md:h-8 md:w-8"
       >
         <img
           :src="flowIcons.grid"
           alt="Grid"
-          class="h-[32px] w-[32px] object-contain"
+          class="h-6 w-6 object-contain sm:h-7 sm:w-7 md:h-8 md:w-8"
         />
       </div>
-      <div class="text-sm text-slate-500">Grid</div>
-      <div class="text-[28px] font-semibold text-slate-700">
+      <div class="text-[10px] text-[#6C7680] sm:text-[11px] md:text-[12px]">Grid</div>
+      <div class="text-[12px] font-semibold text-[#303940] sm:text-[14px] md:text-[15px]">
         {{ formatNumber(gridPowerDisplay)
-        }}<span class="text-base font-normal">kW</span>
+        }}<span class="text-[10px] font-normal sm:text-[11px]">kW</span>
       </div>
     </div>
 
-    <div class="absolute right-10 top-1/2 -translate-y-1/2 text-center">
+    <!-- 右侧节点：电池 -->
+    <div class="absolute text-center" :style="flowNodeStyleConfig.staticNodes.battery">
       <div
-        class="mx-auto mb-1 flex h-[32px] w-[32px] items-center justify-center"
+        class="mx-auto mb-1 flex h-6 w-6 items-center justify-center sm:h-7 sm:w-7 md:h-8 md:w-8"
       >
         <img
           :src="flowIcons.battery"
           alt="Battery"
-          class="h-[32px] w-[32px] object-contain"
+          class="h-6 w-6 object-contain sm:h-7 sm:w-7 md:h-8 md:w-8"
         />
       </div>
-      <div class="text-sm text-slate-500">Battery</div>
-      <div class="text-[28px] font-semibold text-slate-700">
+      <div class="text-[10px] text-[#6C7680] sm:text-[11px] md:text-[12px]">Battery</div>
+      <div class="text-[12px] font-semibold text-[#303940] sm:text-[14px] md:text-[15px]">
         {{ formatNumber(batteryPower)
-        }}<span class="text-base font-normal">kW</span>
+        }}<span class="text-[10px] font-normal sm:text-[11px]">kW</span>
       </div>
     </div>
 
-    <div class="absolute bottom-6 left-0 right-0 h-[86px] text-center">
+    <!-- 底部节点：Wallbox / Heat Pump / Household -->
+    <div class="absolute inset-0 text-center">
       <div
         v-for="item in bottomFlowNodes"
         :key="item.id"
-        class="absolute -translate-x-1/2"
-        :style="{ left: `calc(50% + ${item.offset}px)` }"
+        class="absolute text-center"
+        :style="flowNodeStyleConfig.bottomById[item.id] ?? flowNodeStyleConfig.bottomDefault"
       >
         <div
-          class="mx-auto mb-1 flex h-[32px] w-[32px] items-center justify-center"
+          class="mx-auto mb-1 flex h-6 w-6 items-center justify-center sm:h-7 sm:w-7 md:h-8 md:w-8"
         >
           <img
             :src="item.icon"
             :alt="item.label"
-            class="h-[32px] w-[32px] object-contain"
+            class="h-6 w-6 object-contain sm:h-7 sm:w-7 md:h-8 md:w-8"
           />
         </div>
-        <div class="text-sm text-slate-500">{{ item.label }}</div>
-        <div class="text-[28px] font-semibold text-slate-700">
+        <div class="text-[10px] text-[#6C7680] sm:text-[11px] md:text-[12px]">{{ item.label }}</div>
+        <div class="text-[12px] font-semibold text-[#303940] sm:text-[14px] md:text-[15px]">
           {{ formatNumber(item.power)
-          }}<span class="text-base font-normal">kW</span>
+          }}<span class="text-[10px] font-normal sm:text-[11px]">kW</span>
         </div>
       </div>
     </div>
@@ -251,6 +264,7 @@ defineProps<{
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
 }
 
 .flow-path-active {
