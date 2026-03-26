@@ -43,12 +43,12 @@ const actionIcons = {
         type="primary"
         ghost
         @click="emit('search')"
-        >
-查询
-</Button>
+      >
+        查询
+      </Button>
       <Button class="device-filter-btn" type="primary" @click="emit('search')">
-添加
-</Button>
+        添加
+      </Button>
     </div>
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <div
