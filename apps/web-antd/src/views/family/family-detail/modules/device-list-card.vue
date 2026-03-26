@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { Button, Select } from 'ant-design-vue';
 
+import { $t } from '#/locales';
+
 defineProps<{
   deviceCards: Array<{
     fault: string;
@@ -33,21 +35,23 @@ const actionIcons = {
         :options="deviceTypeOptions"
         :value="deviceType"
         class="device-filter-select w-[180px]"
-        placeholder="设备类型"
+        :placeholder="$t('page.family.deviceType')"
         allow-clear
         @update:value="emit('update:deviceType', $event as string)"
       />
-      <Button class="device-filter-btn" @click="emit('reset')">重置</Button>
+      <Button class="device-filter-btn" @click="emit('reset')">
+        {{ $t('common.reset') }}
+      </Button>
       <Button
         class="device-filter-btn"
         type="primary"
         ghost
         @click="emit('search')"
       >
-        查询
+        {{ $t('common.query') }}
       </Button>
       <Button class="device-filter-btn" type="primary" @click="emit('search')">
-        添加
+        {{ $t('common.add') }}
       </Button>
     </div>
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -76,8 +80,8 @@ const actionIcons = {
               {{ item.sn }}
             </div>
             <div class="mt-2 flex flex-wrap items-center gap-x-4 text-[13px]">
-              <span class="text-[#22c55e]">● 在线</span>
-              <span v-if="item.fault" class="text-[#ff6b6b]">● 故障 {{ item.fault }}</span>
+              <span class="text-[#22c55e]">● {{ $t('page.family.online') }}</span>
+              <span v-if="item.fault" class="text-[#ff6b6b]">● {{ $t('page.family.fault') }} {{ item.fault }}</span>
             </div>
           </div>
         </div>

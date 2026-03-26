@@ -34,6 +34,8 @@ export namespace SystemMenuApi {
     id: string;
     /** 菜单元数据 */
     meta?: {
+      /** 激活菜单路径 */
+      activePath?: string;
       /** 激活时显示的图标 */
       activeIcon?: string;
       /** 固定在标签栏 */
@@ -71,7 +73,7 @@ export namespace SystemMenuApi {
       /** 额外的路由参数 */
       query?: Recordable<any>;
       /** 菜单排序 */
-      sort?: number;
+      order?: number;
       /** 菜单标题 */
       title?: string;
     };
@@ -88,11 +90,44 @@ export namespace SystemMenuApi {
   }
 }
 
+function normalizeStatusValue(status: unknown): 'off' | 'on' | undefined {
+  if (status === 'on' || status === 1 || status === '1' || status === true) {
+    return 'on';
+  }
+  if (status === 'off' || status === 0 || status === '0' || status === false) {
+    return 'off';
+  }
+  return undefined;
+}
+
+function normalizeMenusStatus(menus: SystemMenuApi.SystemMenu[]) {
+  return (menus || []).map((menu) => ({
+    ...menu,
+    status: normalizeStatusValue(menu.status) ?? menu.status,
+    children: menu.children
+      ? normalizeMenusStatus(menu.children)
+      : menu.children,
+  }));
+}
+
+function sortMenusByOrder(menus: SystemMenuApi.SystemMenu[]) {
+  const sorted = [...(menus || [])].toSorted(
+    (a, b) => (a.meta?.order ?? 999) - (b.meta?.order ?? 999),
+  );
+
+  return sorted.map((menu) => ({
+    ...menu,
+    children: menu.children ? sortMenusByOrder(menu.children) : menu.children,
+  }));
+}
+
 /**
  * 获取菜单数据列表
  */
 async function getMenuList() {
-  return requestClient.get<Array<SystemMenuApi.SystemMenu>>('/menus/tree');
+  const menus =
+    await requestClient.get<Array<SystemMenuApi.SystemMenu>>('/menus/tree');
+  return sortMenusByOrder(normalizeMenusStatus(menus));
 }
 
 async function isMenuNameExists(

@@ -31,6 +31,14 @@ const emit = defineEmits<{
 }>();
 const formData = ref<SystemMenuApi.SystemMenu>();
 const titleSuffix = ref<string>();
+
+function normalizeStatusValue(status: unknown): 'off' | 'on' {
+  if (status === 'on' || status === 1 || status === '1' || status === true) {
+    return 'on';
+  }
+  return 'off';
+}
+
 const schema: VbenFormSchema[] = [
   {
     component: 'RadioGroup',
@@ -161,7 +169,7 @@ const schema: VbenFormSchema[] = [
     component: 'Input',
     dependencies: {
       show: (values) => {
-        return ['catalog', 'menu'].includes(values.type);
+        return ['catalog'].includes(values.type);
       },
       triggerFields: ['type'],
     },
@@ -231,6 +239,30 @@ const schema: VbenFormSchema[] = [
   },
   {
     component: 'Input',
+    componentProps: {
+      allowClear: true,
+      placeholder: '/family',
+    },
+    dependencies: {
+      show: (values) => {
+        return values.type === 'menu';
+      },
+      triggerFields: ['type'],
+    },
+    fieldName: 'meta.activePath',
+    label: $t('system.menu.activePath'),
+    rules: z
+      .string()
+      .refine(
+        (value: string) => {
+          return !value || value.startsWith('/');
+        },
+        $t('ui.formRules.startWith', [$t('system.menu.activePath'), '/']),
+      )
+      .optional(),
+  },
+  {
+    component: 'Input',
     dependencies: {
       show: (values) => {
         return ['embedded', 'link'].includes(values.type);
@@ -258,12 +290,12 @@ const schema: VbenFormSchema[] = [
     componentProps: {
       buttonStyle: 'solid',
       options: [
-        { label: $t('common.enabled'), value: 1 },
-        { label: $t('common.disabled'), value: 0 },
+        { label: $t('common.enabled'), value: 'on' },
+        { label: $t('common.disabled'), value: 'off' },
       ],
       optionType: 'button',
     },
-    defaultValue: 1,
+    defaultValue: 'on',
     fieldName: 'status',
     label: $t('system.menu.status'),
   },
@@ -330,8 +362,8 @@ const schema: VbenFormSchema[] = [
       min: 0,
     },
     defaultValue: 0,
-    fieldName: 'meta.sort',
-    label: $t('system.menu.sort'),
+    fieldName: 'meta.order',
+    label: $t('system.menu.order'),
   },
   {
     component: 'Divider',
@@ -471,6 +503,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
         data.linkSrc = data.meta?.iframeSrc;
       }
       if (data) {
+        data.status = normalizeStatusValue(data.status);
         formData.value = data;
         formApi.setValues(formData.value);
         titleSuffix.value = formData.value.meta?.title
@@ -492,6 +525,7 @@ async function onSubmit() {
       await formApi.getValues<
         Omit<SystemMenuApi.SystemMenu, 'children' | 'id'>
       >();
+    data.status = normalizeStatusValue(data.status);
     if (data.type === 'link') {
       data.meta = { ...data.meta, link: data.linkSrc };
     } else if (data.type === 'embedded') {

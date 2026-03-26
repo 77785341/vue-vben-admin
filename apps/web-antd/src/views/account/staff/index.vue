@@ -35,7 +35,11 @@ async function fetchRoles() {
     const response = await getAllRoles();
     roles.value = (response || []).map((role: any) => ({
       id: String(role.id),
-      roleName: role.roleName || role.rolename || role.name || '未知角色',
+      roleName:
+        role.roleName ||
+        role.rolename ||
+        role.name ||
+        $t('system.staff.unknownRole'),
     }));
   } catch (error) {
     console.error('获取角色列表失败:', error);
@@ -160,15 +164,17 @@ function confirm(content: string, title: string) {
  */
 async function onStatusChange(newStatus: 'off' | 'on' | number) {
   const status: Recordable<string> = {
-    off: '禁用',
-    on: '启用',
+    off: $t('system.staff.statusOff'),
+    on: $t('system.staff.statusOn'),
   };
   try {
     // 将数字状态转换为字符串
     const statusValue = newStatus === 1 ? 'on' : 'off';
     await confirm(
-      `你要将状态切换为 【${status[statusValue] || '未知状态'}】 吗？`,
-      `切换状态`,
+      $t('system.staff.switchStatusContent', [
+        status[statusValue] || $t('system.staff.statusUnknown'),
+      ]),
+      $t('system.staff.switchStatusTitle'),
     );
     // 由于staff接口没有单独的状态更新方法，这里可以在后续添加
     return true;
@@ -227,7 +233,9 @@ onMounted(() => {
     <AssignRoleDrawer @success="onRefresh" />
     <Grid>
       <template #submit-before>
-        <Button type="primary" @click="onCreate">添加</Button>
+        <Button type="primary" @click="onCreate">
+          {{ $t('system.staff.add') }}
+        </Button>
       </template>
       <template #image-url="{ row }">
         <div class="flex-center h-full">

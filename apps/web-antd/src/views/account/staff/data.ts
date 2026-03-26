@@ -34,9 +34,9 @@ export function useFormSchema(
     {
       component: 'InputPassword',
       fieldName: 'password',
-      label: '密码',
+      label: $t('system.staff.password'),
       componentProps: {
-        placeholder: '默认123456',
+        placeholder: $t('system.staff.defaultPasswordPlaceholder'),
       },
     },
 

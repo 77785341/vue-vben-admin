@@ -21,6 +21,13 @@ export function getMenuTypeOptions() {
   ];
 }
 
+export function getMenuStatusOptions() {
+  return [
+    { color: 'success', label: $t('common.enabled'), value: 'on' },
+    { color: 'default', label: $t('common.disabled'), value: 'off' },
+  ];
+}
+
 export function useColumns(
   onActionClick: OnActionClickFn<SystemMenuApi.SystemMenu>,
 ): VxeTableGridOptions<SystemMenuApi.SystemMenu>['columns'] {
@@ -75,7 +82,7 @@ export function useColumns(
       title: $t('system.menu.component'),
     },
     {
-      cellRender: { name: 'CellTag' },
+      cellRender: { name: 'CellTag', options: getMenuStatusOptions() },
       field: 'status',
       title: $t('system.menu.status'),
       width: 100,
@@ -92,7 +99,7 @@ export function useColumns(
         options: [
           {
             code: 'append',
-            text: '新增下级',
+            text: $t('system.common.addSubLevel'),
           },
           'edit', // 默认的编辑按钮
           'delete', // 默认的删除按钮

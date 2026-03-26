@@ -5,11 +5,11 @@ import type { StaffApi } from '#/api/account/staff';
 import { $t } from '#/locales';
 
 export function useFormSchema(
-  deptOptions: {
+  _deptOptions: {
     label: string;
     value: string;
   }[] = [],
-  roleOptions: {
+  _roleOptions: {
     label: string;
     value: string;
   }[] = [],
@@ -34,9 +34,9 @@ export function useFormSchema(
     {
       component: 'InputPassword',
       fieldName: 'password',
-      label: '密码',
+      label: $t('system.staff.password'),
       componentProps: {
-        placeholder: '默认123456',
+        placeholder: $t('system.staff.defaultPasswordPlaceholder'),
       },
     },
 
@@ -56,15 +56,15 @@ export function useFormSchema(
       componentProps: {
         allowClear: true,
         options: [
-          { label: '管理员', value: 'admin' },
-          { label: '普通用户', value: 'user' },
+          { label: $t('system.staff.installerRoleAdmin'), value: 'admin' },
+          { label: $t('system.staff.installerRoleUser'), value: 'user' },
         ],
         style: {
           width: '100%',
         },
       },
       fieldName: 'installerRole',
-      label: '账号身份',
+      label: $t('system.staff.installerRole'),
       defaultValue: 'user',
     },
     {
@@ -158,13 +158,13 @@ export function useColumns<T = StaffApi.Staff>(
     },
     {
       field: 'installerRole',
-      title: '账号身份',
+      title: $t('system.staff.installerRole'),
       width: 100,
       formatter: (cellValue: any) => {
         // 处理可能的对象类型或其他非预期值
         const roleMap: Record<string, string> = {
-          admin: '管理员',
-          user: '普通用户',
+          admin: $t('system.staff.installerRoleAdmin'),
+          user: $t('system.staff.installerRoleUser'),
         };
         return roleMap[cellValue.cellValue] || cellValue.cellValue;
       },

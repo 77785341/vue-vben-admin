@@ -1,6 +1,7 @@
 {
   "common": {
-    "view": "查看员工"
+    "addSubLevel": "新增下级",
+    "view": "查看"
   },
   "dept": {
     "createTime": "创建时间",
@@ -39,8 +40,6 @@
   "menu": {
     "activeIcon": "激活图标",
     "activePath": "激活路径",
-    "activePathHelp": "跳转到当前路由时，需要激活的菜单路径。\n当不在导航菜单中显示时，需要指定激活路径",
-    "activePathMustExist": "该路径未能找到有效的菜单",
     "add": "新增",
     "advancedSettings": "其它设置",
     "affixTab": "固定在标签",
@@ -48,7 +47,6 @@
     "badge": "徽章内容",
     "badgeType": {
       "dot": "点",
-      "none": "无",
       "normal": "文字",
       "title": "徽标类型"
     },
@@ -68,6 +66,7 @@
     "menuTitle": "标题",
     "name": "菜单",
     "operation": "操作",
+    "order": "排序",
     "parent": "上级菜单",
     "path": "路由地址",
     "query": "查询",
@@ -106,19 +105,30 @@
     "assignRole": "分配角色",
     "avatar": "头像",
     "createTime": "创建时间",
+    "defaultPasswordPlaceholder": "默认123456",
     "delete": "删除",
     "dept": "所属部门",
     "edit": "修改",
     "email": "邮箱",
+    "installerRole": "账号身份",
+    "installerRoleAdmin": "管理员",
+    "installerRoleUser": "普通用户",
     "list": "员工列表",
     "name": "员工",
     "operation": "操作",
+    "password": "密码",
     "phone": "手机号",
     "query": "查询",
     "realName": "真实姓名",
     "role": "所属角色",
+    "statusOff": "禁用",
+    "statusOn": "启用",
+    "statusUnknown": "未知状态",
     "status": "状态",
+    "switchStatusContent": "你要将状态切换为 【{0}】 吗？",
+    "switchStatusTitle": "切换状态",
     "title": "员工管理",
+    "unknownRole": "未知角色",
     "username": "用户名"
   },
   "title": "系统管理"

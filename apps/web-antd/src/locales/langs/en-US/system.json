@@ -1,6 +1,7 @@
 {
   "common": {
-    "view": "查看员工"
+    "addSubLevel": "Add Child",
+    "view": "View"
   },
   "dept": {
     "createTime": "Create Time",
@@ -38,8 +39,6 @@
   "menu": {
     "activeIcon": "Active Icon",
     "activePath": "Active Path",
-    "activePathHelp": "When jumping to the current route, \nthe menu path that needs to be activated must be specified when it does not display in the navigation menu.",
-    "activePathMustExist": "The path could not find a valid menu",
     "add": "Add",
     "advancedSettings": "Other Settings",
     "affixTab": "Affix In Tabs",
@@ -47,7 +46,6 @@
     "badge": "Badge",
     "badgeType": {
       "dot": "Dot",
-      "none": "None",
       "normal": "Text",
       "title": "Badge Type"
     },
@@ -66,6 +64,7 @@
     "menuTitle": "Title",
     "name": "Menu",
     "operation": "Operation",
+    "order": "Order",
     "parent": "Parent Menu",
     "path": "Route Path",
     "query": "Query",
@@ -106,19 +105,30 @@
     "assignRole": "Assign Role",
     "avatar": "Avatar",
     "createTime": "Creation Time",
+    "defaultPasswordPlaceholder": "Default 123456",
     "delete": "Delete",
     "dept": "Department",
     "edit": "Edit",
     "email": "Email",
+    "installerRole": "Account Type",
+    "installerRoleAdmin": "Admin",
+    "installerRoleUser": "Normal User",
     "list": "Staff List",
     "name": "Staff",
     "operation": "Operation",
+    "password": "Password",
     "phone": "Phone",
     "query": "Query",
     "realName": "Real Name",
     "role": "Role",
+    "statusOff": "Disabled",
+    "statusOn": "Enabled",
+    "statusUnknown": "Unknown Status",
     "status": "Status",
+    "switchStatusContent": "Do you want to switch status to [{0}]?",
+    "switchStatusTitle": "Switch Status",
     "title": "Staff Management",
+    "unknownRole": "Unknown Role",
     "username": "Username"
   },
   "title": "System Management"

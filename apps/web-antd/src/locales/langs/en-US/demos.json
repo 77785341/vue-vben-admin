@@ -1,14 +1,12 @@
 {
+  "antdButtonCard": "Buttons",
+  "antdDescription": "Supports internationalization and integrated theme switching",
+  "antdError": "Error",
+  "antdInfo": "Info",
+  "antdNotificationMessage": "Say something",
+  "antdSuccess": "Success",
+  "antdTitle": "Ant Design Vue Component Demo",
+  "antdWarning": "Warning",
   "title": "Demos",
-  "antd": "Ant Design Vue",
-  "vben": {
-    "title": "Project",
-    "about": "About",
-    "document": "Document",
-    "antdv": "Ant Design Vue Version",
-    "antdv-next": "Antdv Next Version",
-    "naive-ui": "Naive UI Version",
-    "element-plus": "Element Plus Version",
-    "tdesign": "TDesign Vue Version"
-  }
+  "antd": "Ant Design Vue"
 }

@@ -113,7 +113,7 @@ export function useColumns(
         options: [
           {
             code: 'append',
-            text: '新增下级',
+            text: $t('system.common.addSubLevel'),
           },
           'edit', // 默认的编辑按钮
           {

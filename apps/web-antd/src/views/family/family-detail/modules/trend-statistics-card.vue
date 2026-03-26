@@ -11,6 +11,8 @@
 <script lang="ts" setup>
 import { DatePicker } from 'ant-design-vue';
 
+import { $t } from '#/locales';
+
 defineProps<{
   trendDate: string;
   trendDateFormat: string;
@@ -31,9 +33,9 @@ function handleDateChange(
 }
 
 const periods = [
-  { label: '日统计', value: 'day' },
-  { label: '月统计', value: 'month' },
-  { label: '年统计', value: 'year' },
+  { label: $t('page.family.dayStats'), value: 'day' },
+  { label: $t('page.family.monthStats'), value: 'month' },
+  { label: $t('page.family.yearStats'), value: 'year' },
 ] as const;
 </script>
 
@@ -62,7 +64,7 @@ const periods = [
         :value="trendDate"
         :value-format="trendDateFormat"
         class="trend-date-picker w-[170px]"
-        placeholder="选择日期"
+        :placeholder="$t('page.family.selectDate')"
         size="small"
         @change="handleDateChange"
       />

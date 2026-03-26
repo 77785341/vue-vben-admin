@@ -30,7 +30,6 @@ function generateMenus(
     const {
       meta = {} as RouteMeta,
       name: routeName,
-      redirect,
       children = [],
     } = route;
     const {
@@ -44,7 +43,7 @@ function generateMenus(
       order,
       title = '',
       query,
-    } = meta;
+    } = meta as Record<string, any> & RouteMeta;
 
     // 确保菜单名称不为空
     const name = (title || routeName || '') as string;
@@ -62,8 +61,8 @@ function generateMenus(
       });
     }
 
-    // 确定最终路径
-    const resultPath = hideChildrenInMenu ? redirect || path : link || path;
+    // 菜单路径保持稳定，保证 activePath 能和菜单 path 做精确匹配。
+    const resultPath = link || path;
 
     return {
       activeIcon,

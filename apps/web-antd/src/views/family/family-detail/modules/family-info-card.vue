@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { $t } from '#/locales';
+
 defineProps<{
   createTime: string;
   customerName: string;
@@ -24,7 +26,7 @@ defineProps<{
         v-else
         class="mx-auto flex h-[224px] w-[374px] items-center justify-center text-slate-400"
       >
-        暂无图片
+        {{ $t('page.family.noImage') }}
       </div>
     </div>
     <div class="mt-2 space-y-2">
@@ -53,7 +55,7 @@ defineProps<{
       </div>
       <div class="flex items-center text-xl text-slate-500">
         <span class="mr-2 inline-block h-4 w-4 rounded bg-slate-200"></span>
-        <span>{{ customerName || 'Mr Li' }}</span>
+        <span>{{ customerName || $t('page.family.defaultCustomerName') }}</span>
       </div>
       <div class="flex items-center text-xl text-slate-500">
         <span class="mr-2 inline-block h-4 w-4 rounded bg-slate-200"></span>

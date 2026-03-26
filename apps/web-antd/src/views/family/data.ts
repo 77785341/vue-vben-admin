@@ -98,25 +98,25 @@ export function useGridFormSchema(): VbenFormSchema[] {
     {
       component: 'Input',
       componentProps: {
-        placeholder: '请输入家庭名称',
+        placeholder: $t('page.family.familyNamePlaceholder'),
       },
       fieldName: 'installerStationName',
-      label: '家庭名称',
+      label: $t('page.family.familyName'),
     },
     {
       component: 'Select',
       componentProps: {
         allowClear: true,
-        placeholder: '请选择故障类型',
+        placeholder: $t('page.family.faultTypePlaceholder'),
         options: [
-          { label: '故障', value: '1' },
-          { label: '警告', value: '3' },
-          { label: '正常', value: '2' },
-          { label: '全部', value: '0' },
+          { label: $t('page.family.faultTypeFault'), value: '1' },
+          { label: $t('page.family.faultTypeWarning'), value: '3' },
+          { label: $t('page.family.faultTypeNormal'), value: '2' },
+          { label: $t('page.family.faultTypeAll'), value: '0' },
         ],
       },
       fieldName: 'faultNum',
-      label: '故障类型',
+      label: $t('page.family.faultType'),
     },
     {
       component: 'ApiSelect',
@@ -125,19 +125,19 @@ export function useGridFormSchema(): VbenFormSchema[] {
         allowClear: true,
         class: 'w-full',
         labelField: 'countryName',
-        placeholder: '请选择国家',
+        placeholder: $t('page.family.countryPlaceholder'),
         valueField: 'countryId',
       },
       fieldName: 'countryId',
-      label: '国家',
+      label: $t('page.family.country'),
     },
     {
       component: 'Input',
       componentProps: {
-        placeholder: '请输入安装商名称',
+        placeholder: $t('page.family.installerNamePlaceholder'),
       },
       fieldName: 'stationName',
-      label: '安装商名称',
+      label: $t('page.family.installerName'),
     },
   ];
 }
@@ -148,33 +148,33 @@ export function useColumns<T = FamilyApi.Family>(
   return [
     {
       field: 'installerStationPicture',
-      title: '头像',
+      title: $t('page.family.avatar'),
       slots: { default: 'image-url' },
     },
     {
       field: 'installerStationName',
-      title: '家庭名称',
+      title: $t('page.family.familyName'),
     },
     {
       field: 'totalFaultCount',
-      title: '绑定设备数量',
+      title: $t('page.family.boundDeviceCount'),
     },
     {
       field: 'faultType',
-      title: '故障类型',
+      title: $t('page.family.faultType'),
       slots: { default: 'fault-type' },
     },
     {
       field: 'countryName',
-      title: '国家',
+      title: $t('page.family.country'),
     },
     {
       field: 'installerStationAddress',
-      title: '地址',
+      title: $t('page.family.address'),
     },
     {
       field: 'createTime',
-      title: '创建时间',
+      title: $t('page.family.createTime'),
     },
     // {
     //   field: 'installerInfoId',
@@ -182,19 +182,19 @@ export function useColumns<T = FamilyApi.Family>(
     // },
     {
       field: 'pvCapacity',
-      title: '光伏装机容量',
+      title: $t('page.family.pvCapacity'),
     },
     {
       field: 'batteryCapacity',
-      title: '电池总容量',
+      title: $t('page.family.batteryCapacity'),
     },
     {
       field: 'wallboxPower',
-      title: '充电桩总功率',
+      title: $t('page.family.wallboxPower'),
     },
     {
       field: 'pumpPower',
-      title: '热泵总功率',
+      title: $t('page.family.pumpPower'),
     },
     {
       align: 'center',
@@ -208,7 +208,7 @@ export function useColumns<T = FamilyApi.Family>(
         options: [
           // { code: 'edit', text: $t('common.edit') },
           // { code: 'delete', text: $t('common.delete'), danger: true },
-          { code: 'view', text: '查看' },
+          { code: 'view', text: $t('system.common.view') },
         ],
       },
       field: 'operation',
