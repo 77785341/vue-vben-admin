@@ -18,7 +18,9 @@ defineProps<{
       :key="item.label"
       class="grid min-h-[clamp(88px,10vw,118px)] grid-cols-[minmax(56px,86px)_1fr] items-center gap-3 px-3 py-2"
     >
-      <div class="flex aspect-square w-full max-w-[86px] items-center justify-center rounded-lg">
+      <div
+        class="flex aspect-square w-full max-w-[86px] items-center justify-center rounded-lg"
+      >
         <img
           :src="item.icon"
           :alt="item.label"
@@ -27,12 +29,14 @@ defineProps<{
       </div>
       <div>
         <div class="text-[12px] text-[#9EA8B2]">{{ item.label }}</div>
-        <div class="mt-1 text-[clamp(18px,1.8vw,28px)] font-semibold leading-none text-[#237EBC]">
+        <div
+          class="mt-1 text-[clamp(18px,1.8vw,28px)] font-semibold leading-none text-[#237EBC]"
+        >
           <!-- prettier-ignore -->
           {{ item.value }}
-          <span class="ml-1 text-[clamp(11px,0.9vw,13px)] font-normal text-[#237EBC]">{{
-            item.unit
-          }}</span>
+          <span
+            class="ml-1 text-[clamp(11px,0.9vw,13px)] font-normal text-[#237EBC]"
+            >{{ item.unit }}</span>
         </div>
       </div>
     </div>

@@ -28,7 +28,8 @@ import FlowDiagramCard from './modules/flow-diagram-card.vue';
 import GenerationSummaryPanel from './modules/generation-summary-panel.vue';
 import TrendStatisticsCard from './modules/trend-statistics-card.vue';
 
-const API_BASE_URL = 'https://test-bucket-borochi.s3.eu-central-1.amazonaws.com/';
+const API_BASE_URL =
+  'https://test-bucket-borochi.s3.eu-central-1.amazonaws.com/';
 
 const route = useRoute();
 const familyId = ref<string>('');
@@ -99,15 +100,26 @@ const flowNodeStyleConfig = {
 
 // 兼容不同接口层级：station -> familyInfo -> 根对象。
 const stationBase = computed(() => {
-  return familyData.value?.station ?? familyData.value?.familyInfo ?? familyData.value ?? {};
+  return (
+    familyData.value?.station ??
+    familyData.value?.familyInfo ??
+    familyData.value ??
+    {}
+  );
 });
 
 const stationName = computed(
-  () => stationBase.value?.installerStationName ?? stationBase.value?.familyName ?? '--',
+  () =>
+    stationBase.value?.installerStationName ??
+    stationBase.value?.familyName ??
+    '--',
 );
 
 const stationAddress = computed(
-  () => stationBase.value?.installerStationAddress ?? stationBase.value?.address ?? '--',
+  () =>
+    stationBase.value?.installerStationAddress ??
+    stationBase.value?.address ??
+    '--',
 );
 
 const stationPhone = computed(
@@ -374,7 +386,9 @@ async function fetchStationDevices(type = '') {
   }
 
   const responseData = await getDeviceByStationAndType(stationId.value, type);
-  const payload = Array.isArray(responseData) ? responseData : ((responseData as any)?.data ?? []);
+  const payload = Array.isArray(responseData)
+    ? responseData
+    : ((responseData as any)?.data ?? []);
   if (!Array.isArray(payload)) {
     stationDevicesRaw.value = [];
     return;
@@ -456,7 +470,12 @@ const deviceCards = computed(() => {
       'inverters';
 
     const snField = typeSnFieldMap[resolvedTypeKey] ?? '';
-    const rawSn = item?.[snField] ?? item?.deviceSn ?? item?.sn ?? item?.serialNumber ?? '--';
+    const rawSn =
+      item?.[snField] ??
+      item?.deviceSn ??
+      item?.sn ??
+      item?.serialNumber ??
+      '--';
     const rawStatus = item?.status ?? item?.onlineStatus ?? item?.state;
     let status = String(rawStatus ?? '未知');
     if (
@@ -475,7 +494,12 @@ const deviceCards = computed(() => {
       status = '离线';
     }
 
-    const rawFault = item?.faultCount ?? item?.faultNum ?? item?.alarmCount ?? item?.fault ?? 0;
+    const rawFault =
+      item?.faultCount ??
+      item?.faultNum ??
+      item?.alarmCount ??
+      item?.fault ??
+      0;
     const faultCount = Number(rawFault);
 
     const typeIdFieldMap: Record<string, string> = {
@@ -526,7 +550,10 @@ const trendDateFormat = computed(() => {
   return 'YYYY-MM-DD';
 });
 
-function normalizeSeriesData(source: unknown, length: number): Array<null | number> {
+function normalizeSeriesData(
+  source: unknown,
+  length: number,
+): Array<null | number> {
   // 保留 null，图表端展示断点而不是补 0，避免误导趋势判断。
   if (Array.isArray(source)) {
     const numbers = source
@@ -535,7 +562,10 @@ function normalizeSeriesData(source: unknown, length: number): Array<null | numb
         if (typeof item === 'number') return item;
         if (item && typeof item === 'object') {
           const value =
-            (item as any).value ?? (item as any).data ?? (item as any).y ?? (item as any).amount;
+            (item as any).value ??
+            (item as any).data ??
+            (item as any).y ??
+            (item as any).amount;
           if (value === null || value === undefined) return null;
           const parsedValue = Number(value);
           return Number.isFinite(parsedValue) ? parsedValue : null;
@@ -543,20 +573,32 @@ function normalizeSeriesData(source: unknown, length: number): Array<null | numb
         const parsedValue = Number(item);
         return Number.isFinite(parsedValue) ? parsedValue : null;
       })
-      .map((item) => (item === null || item === undefined || Number.isFinite(item) ? item : null));
+      .map((item) =>
+        item === null || item === undefined || Number.isFinite(item)
+          ? item
+          : null,
+      );
 
     if (numbers.length >= length) return numbers.slice(0, length);
-    return [...numbers, ...Array.from({ length: length - numbers.length }, () => null)];
+    return [
+      ...numbers,
+      ...Array.from({ length: length - numbers.length }, () => null),
+    ];
   }
 
   if (source && typeof source === 'object') {
-    const objectValues = Object.values(source as Record<string, unknown>).map((item) => {
-      if (item === null || item === undefined) return null;
-      const numberValue = Number(item);
-      return Number.isFinite(numberValue) ? numberValue : null;
-    });
+    const objectValues = Object.values(source as Record<string, unknown>).map(
+      (item) => {
+        if (item === null || item === undefined) return null;
+        const numberValue = Number(item);
+        return Number.isFinite(numberValue) ? numberValue : null;
+      },
+    );
     if (objectValues.length >= length) return objectValues.slice(0, length);
-    return [...objectValues, ...Array.from({ length: length - objectValues.length }, () => null)];
+    return [
+      ...objectValues,
+      ...Array.from({ length: length - objectValues.length }, () => null),
+    ];
   }
 
   return Array.from({ length }, () => null);
@@ -566,7 +608,12 @@ function getDaysInTrendMonth(value: string) {
   const [yearString, monthString] = value.split('-');
   const year = Number(yearString);
   const month = Number(monthString);
-  if (!Number.isFinite(year) || !Number.isFinite(month) || month < 1 || month > 12) {
+  if (
+    !Number.isFinite(year) ||
+    !Number.isFinite(month) ||
+    month < 1 ||
+    month > 12
+  ) {
     return 30;
   }
   return new Date(year, month, 0).getDate();
@@ -579,9 +626,12 @@ function handleTrendPeriodChange(period: TrendPeriod) {
   void fetchTrendStatistics();
 }
 
-function handleTrendDateChange(value: string | { format: (pattern?: string) => string }) {
+function handleTrendDateChange(
+  value: string | { format: (pattern?: string) => string },
+) {
   if (!value) return;
-  trendDate.value = typeof value === 'string' ? value : value.format(trendDateFormat.value);
+  trendDate.value =
+    typeof value === 'string' ? value : value.format(trendDateFormat.value);
   void fetchTrendStatistics();
 }
 
@@ -602,8 +652,12 @@ async function fetchTrendStatistics() {
     } else {
       response = await getYearStatistics(trendDate.value, stationId.value);
     }
-    const apiData = (Array.isArray(response) ? response : (response as any)?.data) as unknown;
-    trendStatisticsRaw.value = Array.isArray(apiData) ? (apiData as TrendStatisticsSeries[]) : [];
+    const apiData = (
+      Array.isArray(response) ? response : (response as any)?.data
+    ) as unknown;
+    trendStatisticsRaw.value = Array.isArray(apiData)
+      ? (apiData as TrendStatisticsSeries[])
+      : [];
   } catch (error) {
     console.error('获取统计图数据失败:', error);
     trendStatisticsRaw.value = [];
@@ -726,7 +780,9 @@ function renderTrendChart() {
           return;
         }
         const parsedValue = Number(rawValue);
-        valueByAxis[axisValue] = Number.isFinite(parsedValue) ? parsedValue : null;
+        valueByAxis[axisValue] = Number.isFinite(parsedValue)
+          ? parsedValue
+          : null;
       });
       data = xData.map((axisValue) => {
         return Object.prototype.hasOwnProperty.call(valueByAxis, axisValue)
@@ -754,7 +810,8 @@ function renderTrendChart() {
   // 接口 isDefault 控制初始渲染状态，未默认显示的系列可通过底部图例点击显示。
   const legendSelected: Record<string, boolean> = {};
   seriesSource.forEach((seriesItem, index) => {
-    const fallbackName = defaultSeriesMeta[index]?.name || `Series ${index + 1}`;
+    const fallbackName =
+      defaultSeriesMeta[index]?.name || `Series ${index + 1}`;
     const seriesName = seriesItem?.name || fallbackName;
     legendSelected[seriesName] = seriesItem?.isDefault !== false;
   });
@@ -825,9 +882,11 @@ async function fetchFamilyDetail() {
       getFamilyById(familyId.value),
       getStationMonitor(stationId.value),
     ]);
-    const familyPayload = (familyResponse as any)?.data ?? familyResponse ?? null;
+    const familyPayload =
+      (familyResponse as any)?.data ?? familyResponse ?? null;
     familyData.value = familyPayload;
-    monitorData.value = (monitorResponse as any)?.data ?? monitorResponse ?? null;
+    monitorData.value =
+      (monitorResponse as any)?.data ?? monitorResponse ?? null;
     await fetchStationDevices();
     console.warn('家庭详情数据', familyResponse);
     await fetchTrendStatistics();
@@ -863,7 +922,9 @@ onMounted(() => {
               :station-picture="stationPicture"
             />
 
-            <div class="h-full rounded-xl bg-white p-3 shadow-sm ring-1 ring-slate-100">
+            <div
+              class="h-full rounded-xl bg-white p-3 shadow-sm ring-1 ring-slate-100"
+            >
               <div
                 class="grid h-full grid-cols-1 gap-4 rounded-xl xl:grid-cols-[minmax(0,1.8fr)_minmax(0,1.2fr)] xl:items-stretch"
               >

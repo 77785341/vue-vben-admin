@@ -32,7 +32,8 @@ import { AuthPageLayout } from '@vben/layouts';
   animation: none;
 }
 
-.borochi-auth-layout :deep(.mr-20.flex-col-center.h-full > [class~='text-1xl']) {
+.borochi-auth-layout
+  :deep(.mr-20.flex-col-center.h-full > [class~='text-1xl']) {
   margin-top: 16px;
   font-size: clamp(28px, 2vw, 40px);
   font-weight: 700;

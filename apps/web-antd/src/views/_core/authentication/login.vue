@@ -66,7 +66,9 @@ const formSchema = computed((): VbenFormSchema[] => {
   >
     <template #title>
       <div class="mb-7 sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 class="mb-3 text-3xl/9 font-bold tracking-tight text-foreground lg:text-4xl">
+        <h2
+          class="mb-3 text-3xl/9 font-bold tracking-tight text-foreground lg:text-4xl"
+        >
           {{ `${$t('authentication.welcomeBack')}` }}
         </h2>
       </div>
