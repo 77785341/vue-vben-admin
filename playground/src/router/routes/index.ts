@@ -4,9 +4,9 @@
  * @LastEditors: Felix 77785341@qq.com
  * @LastEditTime: 2026-03-23 16:47:30
  * @FilePath: \vue-vben-admin\playground\src\router\routes\index.ts
- * @Description: 
- * 
- * Copyright (c) 2026 by ${git_name_email}, All Rights Reserved. 
+ * @Description:
+ *
+ * Copyright (c) 2026 by ${git_name_email}, All Rights Reserved.
  */
 import type { RouteRecordRaw } from 'vue-router';
 

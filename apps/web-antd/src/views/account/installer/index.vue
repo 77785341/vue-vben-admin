@@ -9,7 +9,6 @@ import type { InstallerApi } from '#/api/account/installer';
 import { useRouter } from 'vue-router';
 
 import { Page, useVbenDrawer } from '@vben/common-ui';
-import { Plus } from '@vben/icons';
 
 import { Button, message } from 'ant-design-vue';
 
@@ -27,6 +26,7 @@ const [FormDrawer, formDrawerApi] = useVbenDrawer({
 });
 
 const [Grid, gridApi] = useVbenVxeGrid({
+  separator: false,
   formOptions: {
     schema: useGridFormSchema(),
     submitOnChange: true,
@@ -119,11 +119,10 @@ function onCreate() {
 <template>
   <Page auto-content-height>
     <FormDrawer @success="onRefresh" />
-    <Grid :table-title="$t('system.installer.list')">
-      <template #toolbar-tools>
+    <Grid>
+      <template #expand-before>
         <Button type="primary" @click="onCreate">
-          <Plus class="size-5" />
-          {{ $t('ui.actionTitle.create', [$t('system.installer.name')]) }}
+          {{ $t('common.create') }}
         </Button>
       </template>
     </Grid>

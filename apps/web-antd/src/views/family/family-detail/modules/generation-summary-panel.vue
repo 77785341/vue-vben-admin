@@ -32,10 +32,12 @@ defineProps<{
         <div
           class="mt-1 text-[clamp(18px,1.8vw,28px)] font-semibold leading-none text-[#237EBC]"
         >
-          {{ item.value
-          }}<span
+          <!-- prettier-ignore -->
+          {{ item.value }}
+          <span
             class="ml-1 text-[clamp(11px,0.9vw,13px)] font-normal text-[#237EBC]"
-            >{{ item.unit }}</span>
+            >{{ item.unit }}</span
+          >
         </div>
       </div>
     </div>

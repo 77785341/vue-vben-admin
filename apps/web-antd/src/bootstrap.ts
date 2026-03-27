@@ -17,6 +17,7 @@ import App from './app.vue';
 import { router } from './router';
 
 import './styles/font.css';
+import './styles/transparent-layout.css';
 
 async function bootstrap(namespace: string) {
   // 初始化组件适配器

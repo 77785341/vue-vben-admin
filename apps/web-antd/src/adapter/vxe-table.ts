@@ -20,6 +20,26 @@ import { $t } from '#/locales';
 
 import { useVbenForm } from './form';
 
+const globalInlineSearchFormOptions = {
+  showCollapseButton: false,
+  actionWrapperClass: 'vben-grid-form-actions inline-flex items-center gap-3',
+  layout: 'inline' as const,
+  wrapperClass: 'flex flex-wrap gap-4 pb-0 items-center',
+  submitButtonOptions: {
+    class: 'vben-grid-query-btn',
+  },
+  resetButtonOptions: {
+    class: 'vben-grid-reset-btn',
+  },
+  commonConfig: {
+    componentProps: {
+      class: 'w-full',
+    },
+    formItemClass: 'flex-none min-w-[160px] max-w-[220px] w-[18%]',
+    hideLabel: true,
+  },
+};
+
 setupVbenVxeTable({
   configVxeTable: (vxeUI) => {
     vxeUI.setConfig({
@@ -286,8 +306,31 @@ setupVbenVxeTable({
 });
 
 export const useVbenVxeGrid = <T extends Record<string, any>>(
-  ...rest: Parameters<typeof useGrid<T, ComponentType>>
-) => useGrid<T, ComponentType>(...rest);
+  options: Parameters<typeof useGrid<T, ComponentType>>[0],
+) => {
+  if (!options?.formOptions) {
+    return useGrid<T, ComponentType>(options);
+  }
+
+  const pageCommonConfig = options.formOptions.commonConfig ?? {};
+  const pageComponentProps = pageCommonConfig.componentProps ?? {};
+
+  return useGrid<T, ComponentType>({
+    ...options,
+    formOptions: {
+      ...globalInlineSearchFormOptions,
+      ...options.formOptions,
+      commonConfig: {
+        ...globalInlineSearchFormOptions.commonConfig,
+        ...pageCommonConfig,
+        componentProps: {
+          ...globalInlineSearchFormOptions.commonConfig.componentProps,
+          ...pageComponentProps,
+        },
+      },
+    },
+  });
+};
 
 export type OnActionClickParams<T = Recordable<any>> = {
   code: string;

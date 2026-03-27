@@ -19,6 +19,10 @@ export const overridesPreferences = defineOverridesPreferences({
   app: {
     name: import.meta.env.VITE_APP_TITLE,
   },
+  logo: {
+    source: '/images/logo/LOGO@2x.png',
+    sourceDark: '/images/logo/LOGO@2x.png',
+  },
   breadcrumb: {
     enable: false,
   },

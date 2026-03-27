@@ -71,6 +71,7 @@ const [AssignRoleDrawer, assignRoleDrawerApi] = useVbenDrawer({
 });
 
 const [Grid, gridApi] = useVbenVxeGrid({
+  separator: false,
   formOptions: {
     fieldMappingTime: [['createTime', ['startTime', 'endTime']]],
     schema: useGridFormSchema(),
@@ -159,7 +160,7 @@ function confirm(content: string, title: string) {
  */
 async function onStatusChange(
   newStatus: 'off' | 'on' | number,
-  row: StaffApi.Staff,
+  _row: StaffApi.Staff,
 ) {
   const status: Recordable<string> = {
     off: '禁用',
@@ -210,10 +211,6 @@ function onRefresh() {
   gridApi.query();
 }
 
-function onRoleSelectSuccess() {
-  onRefresh();
-}
-
 function onCreate() {
   formDrawerApi.setData({ installerInfoId: installerInfoId.value }).open();
 }
@@ -234,8 +231,8 @@ onMounted(() => {
   <Page auto-content-height>
     <FormDrawer @success="onRefresh" />
     <AssignRoleDrawer @success="onRefresh" />
-    <Grid :table-title="$t('system.staff.list')">
-      <template #toolbar-tools>
+    <Grid>
+      <template #expand-before>
         <Button type="primary" @click="onCreate">
           <Plus class="size-5" />
           {{ $t('ui.actionTitle.create', [$t('system.staff.name')]) }}

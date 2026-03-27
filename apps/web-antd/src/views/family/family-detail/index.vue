@@ -7,9 +7,12 @@ import { useRoute } from 'vue-router';
 import { Page } from '@vben/common-ui';
 import { EchartsUI, useEcharts } from '@vben/plugins/echarts';
 
-import { message, Skeleton } from 'ant-design-vue';
+import { message, Modal, Skeleton } from 'ant-design-vue';
 
 import {
+  deleteInstallerInverter,
+  deleteInstallerPump,
+  deleteInstallerWallbox,
   getDailyStatistics,
   getDeviceByStationAndType,
   getMonthStatistics,
@@ -18,6 +21,7 @@ import {
 } from '#/api';
 import { getFamilyById } from '#/api/family/family';
 
+import DeviceCreateModal from './modules/device-create-modal.vue';
 import DeviceListCard from './modules/device-list-card.vue';
 import FamilyInfoCard from './modules/family-info-card.vue';
 import FlowDiagramCard from './modules/flow-diagram-card.vue';
@@ -88,7 +92,7 @@ const flowNodeStyleConfig = {
   },
   bottomDefault: buildNodeStyle(195, 310),
   staticNodes: {
-    battery: buildNodeStyle(330, 120),
+    battery: buildNodeStyle(330, 110),
     grid: buildNodeStyle(79, 180),
     solar: buildNodeStyle(195, 8),
   },
@@ -281,9 +285,9 @@ const flowPathConfig = {
     reversePath: 'M115 310 L115 288 L195 288',
   },
   solar: {
-    base: 'M195 80 L195 125',
-    forwardPath: 'M195 80 L195 125',
-    reversePath: 'M195 125 L195 80',
+    base: 'M195 90 L195 125',
+    forwardPath: 'M195 90 L195 125',
+    reversePath: 'M195 125 L195 90',
   },
 } as const;
 
@@ -354,7 +358,8 @@ const deviceTypeImageMap: Record<DeviceTypeKey, string> = {
   wallboxes: '/images/family/family-device-wallbox@2x.png',
 };
 
-const deviceTypeQuery = ref<string>('');
+const deviceTypeQuery = ref<string | undefined>(undefined);
+const createDeviceModalOpen = ref(false);
 
 function resolveDeviceTypeKey(typeValue: unknown): DeviceTypeKey | null {
   const normalized = String(typeValue ?? '')
@@ -400,12 +405,45 @@ async function fetchStationDevices(type = '') {
 }
 
 function handleDeviceTypeSearch(type?: string) {
-  void fetchStationDevices(type ?? deviceTypeQuery.value);
+  void fetchStationDevices(type ?? deviceTypeQuery.value ?? '');
 }
 
 function handleDeviceTypeReset() {
-  deviceTypeQuery.value = '';
+  deviceTypeQuery.value = undefined;
   void fetchStationDevices('');
+}
+
+function handleCreateDevice() {
+  createDeviceModalOpen.value = true;
+}
+
+function handleCreateDeviceSuccess() {
+  void fetchStationDevices(deviceTypeQuery.value ?? '');
+}
+
+function handleDeleteDevice(id: string, typeKey: string) {
+  Modal.confirm({
+    title: '确认删除',
+    content: '确定要删除该设备吗？',
+    okText: '删除',
+    okType: 'danger',
+    cancelText: '取消',
+    async onOk() {
+      try {
+        if (typeKey === 'pumps') {
+          await deleteInstallerPump(id);
+        } else if (typeKey === 'wallboxes') {
+          await deleteInstallerWallbox(id);
+        } else {
+          await deleteInstallerInverter(id);
+        }
+        message.success('删除成功');
+        void fetchStationDevices(deviceTypeQuery.value ?? '');
+      } catch {
+        message.error('删除失败');
+      }
+    },
+  });
 }
 
 // 设备列表做多字段兼容，避免后端字段命名不一致导致展示空值。
@@ -464,13 +502,23 @@ const deviceCards = computed(() => {
       0;
     const faultCount = Number(rawFault);
 
+    const typeIdFieldMap: Record<string, string> = {
+      inverters: 'inverterId',
+      pumps: 'pumpId',
+      wallboxes: 'wallboxId',
+    };
+    const idField = typeIdFieldMap[resolvedTypeKey] ?? 'id';
+    const rawId = String(item?.[idField] ?? item?.id ?? item?.deviceId ?? '');
+
     return {
+      id: rawId,
       key: `${rawSn}-${index}`,
       title: item?.deviceName || typeNameMap[resolvedTypeKey] || '设备',
       sn: `SN:${rawSn}`,
       status,
-      fault: `${Number.isFinite(faultCount) ? faultCount : 0}`,
+      faultNum: Number.isFinite(faultCount) ? faultCount : 0,
       image: deviceTypeImageMap[resolvedTypeKey],
+      typeKey: resolvedTypeKey,
     };
   });
 });
@@ -924,9 +972,17 @@ onMounted(() => {
         :device-cards="deviceCards"
         :device-type="deviceTypeQuery"
         :device-type-options="deviceTypeOptions"
+        @create="handleCreateDevice"
+        @delete="handleDeleteDevice"
         @reset="handleDeviceTypeReset"
         @search="handleDeviceTypeSearch"
         @update:device-type="deviceTypeQuery = $event"
+      />
+
+      <DeviceCreateModal
+        v-model:open="createDeviceModalOpen"
+        :installer-station-id="stationId"
+        @success="handleCreateDeviceSuccess"
       />
     </div>
   </Page>

@@ -5,21 +5,25 @@ import { $t } from '#/locales';
 
 defineProps<{
   deviceCards: Array<{
-    fault: string;
+    faultNum: number;
+    id: string;
     image?: string;
     key: string;
     sn: string;
     status: string;
     title: string;
+    typeKey: string;
   }>;
   deviceType?: string;
   deviceTypeOptions?: Array<{ label: string; value: string }>;
 }>();
 
 const emit = defineEmits<{
+  create: [];
+  delete: [id: string, typeKey: string];
   reset: [];
   search: [];
-  'update:deviceType': [value: string];
+  'update:deviceType': [value: string | undefined];
 }>();
 
 const actionIcons = {
@@ -37,21 +41,28 @@ const actionIcons = {
         class="device-filter-select w-[180px]"
         :placeholder="$t('page.family.deviceType')"
         allow-clear
-        @update:value="emit('update:deviceType', $event as string)"
+        @update:value="
+          emit('update:deviceType', ($event as string | undefined) || undefined)
+        "
       />
-      <Button class="device-filter-btn" @click="emit('reset')">
+      <Button
+        class="device-filter-btn device-filter-btn-soft"
+        @click="emit('reset')"
+      >
         {{ $t('common.reset') }}
       </Button>
       <Button
-        class="device-filter-btn"
-        type="primary"
-        ghost
+        class="device-filter-btn device-filter-btn-soft"
         @click="emit('search')"
       >
         {{ $t('common.query') }}
       </Button>
-      <Button class="device-filter-btn" type="primary" @click="emit('search')">
-        {{ $t('common.add') }}
+      <Button
+        class="device-filter-btn device-filter-btn-primary"
+        type="primary"
+        @click="emit('create')"
+      >
+        {{ $t('common.create') }}
       </Button>
     </div>
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -80,15 +91,22 @@ const actionIcons = {
               {{ item.sn }}
             </div>
             <div class="mt-2 flex flex-wrap items-center gap-x-4 text-[13px]">
-              <span class="text-[#22c55e]">● {{ $t('page.family.online') }}</span>
-              <span v-if="item.fault" class="text-[#ff6b6b]">● {{ $t('page.family.fault') }} {{ item.fault }}</span>
+              <!-- prettier-ignore -->
+              <span v-if="item.status === 'online'" class="text-[#22c55e]">● {{ $t('page.family.online') }}</span>
+              <!-- prettier-ignore -->
+              <span v-else class="text-[#94a3b8]">● {{ $t('page.family.offline') }}</span>
+              <!-- prettier-ignore -->
+              <span v-if="Number(item.faultNum) > 0" class="text-[#ff6b6b]">● {{ $t('page.family.fault') }} {{ item.faultNum }}</span>
             </div>
           </div>
         </div>
         <div class="mt-4 grid grid-cols-2 gap-3">
-          <button class="device-action-btn device-action-delete">
+          <button
+            class="device-action-btn device-action-delete"
+            @click="emit('delete', item.id, item.typeKey)"
+          >
             <img :src="actionIcons.delete" alt="delete" class="action-icon" />
-            Delate
+            {{ $t('common.delete') }}
           </button>
           <button class="device-action-btn device-action-view">
             <img :src="actionIcons.view" alt="view" class="action-icon" />
@@ -116,6 +134,44 @@ const actionIcons = {
   padding: 0 14px;
   line-height: 34px;
   border-radius: 6px;
+}
+
+.device-filter-btn-soft {
+  color: #2e7fbe !important;
+  background: #e8f2fd !important;
+  border-color: #9ec1e8 !important;
+  box-shadow: none !important;
+}
+
+.device-filter-btn-soft:hover {
+  color: #2e7fbe !important;
+  background: #deecfa !important;
+  border-color: #89b4e3 !important;
+}
+
+.device-filter-btn-soft:active {
+  color: #2e7fbe !important;
+  background: #d4e6f8 !important;
+  border-color: #7aaadc !important;
+}
+
+.device-filter-btn-primary {
+  color: #fff !important;
+  background: #2e7fbe !important;
+  border-color: #2e7fbe !important;
+  box-shadow: none !important;
+}
+
+.device-filter-btn-primary:hover {
+  color: #fff !important;
+  background: #3b8fce !important;
+  border-color: #3b8fce !important;
+}
+
+.device-filter-btn-primary:active {
+  color: #fff !important;
+  background: #256fab !important;
+  border-color: #256fab !important;
 }
 
 .device-card {

@@ -92,6 +92,7 @@ function onActionClick({
 }
 
 const [Grid, gridApi] = useVbenVxeGrid({
+  separator: false,
   gridEvents: {},
   gridOptions: {
     columns: useColumns(onActionClick),
@@ -131,8 +132,8 @@ function refreshGrid() {
 <template>
   <Page auto-content-height>
     <FormModal @success="refreshGrid" />
-    <Grid table-title="部门列表">
-      <template #toolbar-tools>
+    <Grid>
+      <template #expand-before>
         <Button type="primary" @click="onCreate">
           <Plus class="size-5" />
           {{ $t('ui.actionTitle.create', [$t('system.dept.name')]) }}

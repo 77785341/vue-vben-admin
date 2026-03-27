@@ -23,7 +23,7 @@ const emit = defineEmits<{
   success: [];
 }>();
 
-const isUpdate = ref(true);
+const _isUpdate = ref(true);
 const rowId = ref<string>('');
 
 // 计算表单配置

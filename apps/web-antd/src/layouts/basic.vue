@@ -14,7 +14,7 @@ import {
   Notification,
   UserDropdown,
 } from '@vben/layouts';
-import { preferences } from '@vben/preferences';
+import { preferences, updatePreferences } from '@vben/preferences';
 import { useAccessStore, useUserStore } from '@vben/stores';
 import { openWindow } from '@vben/utils';
 
@@ -74,6 +74,15 @@ const notifications = ref<NotificationItem[]>([
     link: 'https://doc.vben.pro',
   },
 ]);
+
+updatePreferences({
+  logo: {
+    enable: true,
+    fit: 'contain',
+    source: '/images/logo/LOGO@2x.png',
+    sourceDark: '/images/logo/LOGO@2x.png',
+  },
+});
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -171,6 +180,15 @@ watch(
 
 <template>
   <BasicLayout @clear-preferences-and-logout="handleLogout">
+    <template #logo>
+      <div class="flex h-full w-full items-center">
+        <img
+          alt="logo"
+          src="/images/logo/LOGO@2x.png"
+          class="block h-full w-full object-contain object-left"
+        />
+      </div>
+    </template>
     <template #user-dropdown>
       <UserDropdown
         :avatar

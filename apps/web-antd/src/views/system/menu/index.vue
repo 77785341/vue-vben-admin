@@ -31,6 +31,7 @@ const [FormDrawer, formDrawerApi] = useVbenDrawer({
 });
 
 const [Grid, gridApi] = useVbenVxeGrid({
+  separator: false,
   gridOptions: {
     columns: useColumns(onActionClick, {
       canAppend,
@@ -130,17 +131,17 @@ function onDelete(row: SystemMenuApi.SystemMenu) {
 <template>
   <Page auto-content-height>
     <FormDrawer @success="onRefresh" />
+    <div class="mb-3 flex justify-end">
+      <Button
+        v-access:code="'system:menu:add'"
+        type="primary"
+        @click="onCreate"
+      >
+        <Plus class="size-5" />
+        {{ $t('ui.actionTitle.create', [$t('system.menu.name')]) }}
+      </Button>
+    </div>
     <Grid>
-      <template #toolbar-tools>
-        <Button
-          v-access:code="'system:menu:add'"
-          type="primary"
-          @click="onCreate"
-        >
-          <Plus class="size-5" />
-          {{ $t('ui.actionTitle.create', [$t('system.menu.name')]) }}
-        </Button>
-      </template>
       <template #title="{ row }">
         <div class="flex w-full items-center gap-1">
           <div class="size-5 shrink-0">

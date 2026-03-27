@@ -1,0 +1,133 @@
+/* Layout transparency overrides for web-antd */
+
+html,
+body,
+#app {
+  background-image: url('/images/login/layout_image.png');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
+}
+
+/* Left sidebar: 50% white background */
+.bg-sidebar,
+.bg-sidebar-deep {
+  background-color: rgb(255 255 255 / 50%) !important;
+  border-right: none !important;
+}
+
+.bg-sidebar .vben-menu,
+.bg-sidebar-deep .vben-menu {
+  --menu-item-background-color: transparent !important;
+  --menu-submenu-background-color: transparent !important;
+}
+
+.bg-sidebar .vben-menu-item:not(.is-active),
+.bg-sidebar .vben-sub-menu-content:not(.is-active),
+.bg-sidebar .vben-sub-menu,
+.bg-sidebar-deep .vben-menu-item:not(.is-active),
+.bg-sidebar-deep .vben-sub-menu-content:not(.is-active),
+.bg-sidebar-deep .vben-sub-menu {
+  background: transparent !important;
+}
+
+/* Right content area: fully transparent */
+main.bg-background-deep {
+  background-color: transparent !important;
+}
+
+/* Top tabbar and tab labels: 50% white background */
+.bg-header,
+.vben-layout-tabbar {
+  background-color: rgb(255 255 255 / 50%) !important;
+  border-bottom: none !important;
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+._scroll__fixed_ {
+  background-color: rgb(255 255 255 / 50%) !important;
+}
+
+/* Remove form/table wrapper backgrounds in content area */
+main.bg-background-deep .bg-card,
+main.bg-background-deep .vxe-grid,
+main.bg-background-deep .vxe-grid--toolbar-wrapper,
+main.bg-background-deep .vxe-grid--form-wrapper,
+main.bg-background-deep .vxe-grid--layout-wrapper,
+main.bg-background-deep .vxe-table--header-wrapper,
+main.bg-background-deep .vxe-table--body-wrapper,
+main.bg-background-deep .vxe-table--footer-wrapper {
+  background-color: transparent !important;
+}
+
+/* Keep vxe-table internals transparent as well */
+main.bg-background-deep .vxe-grid {
+  --vxe-ui-layout-background-color: transparent;
+  --vxe-ui-table-header-background-color: transparent;
+}
+
+/* Remove vxe-grid top toolbar row globally (title + tool icons) */
+main.bg-background-deep .vxe-grid--toolbar-wrapper {
+  display: none !important;
+}
+
+/* Global search form action buttons */
+main.bg-background-deep .vben-grid-form-actions {
+  --grid-primary: #2e7fbe;
+  --grid-soft-bg: #e8f2fd;
+  --grid-soft-border: #9ec1e8;
+}
+
+/* Reset/Search: light blue background */
+main.bg-background-deep
+  .vben-grid-form-actions
+  .ant-btn:not(.ant-btn-primary):not(.ant-btn-link):not(.ant-btn-text),
+main.bg-background-deep .vben-grid-form-actions .vben-grid-query-btn.ant-btn {
+  color: var(--grid-primary) !important;
+  background-color: var(--grid-soft-bg) !important;
+  border-color: var(--grid-soft-border) !important;
+  box-shadow: none !important;
+}
+
+main.bg-background-deep
+  .vben-grid-form-actions
+  .ant-btn:not(.ant-btn-primary):not(.ant-btn-link):not(.ant-btn-text):hover,
+main.bg-background-deep .vben-grid-form-actions .vben-grid-query-btn.ant-btn:hover {
+  color: var(--grid-primary) !important;
+  background-color: #deecfa !important;
+  border-color: #89b4e3 !important;
+}
+
+main.bg-background-deep
+  .vben-grid-form-actions
+  .ant-btn:not(.ant-btn-primary):not(.ant-btn-link):not(.ant-btn-text):active,
+main.bg-background-deep .vben-grid-form-actions .vben-grid-query-btn.ant-btn:active {
+  color: var(--grid-primary) !important;
+  background-color: #d4e6f8 !important;
+  border-color: #7aaadc !important;
+}
+
+/* Add button: solid primary */
+main.bg-background-deep .vben-grid-form-actions .ant-btn.ant-btn-primary:not(.vben-grid-query-btn) {
+  color: #fff !important;
+  background-color: var(--grid-primary) !important;
+  border-color: var(--grid-primary) !important;
+  box-shadow: none !important;
+}
+
+main.bg-background-deep
+  .vben-grid-form-actions
+  .ant-btn.ant-btn-primary:not(.vben-grid-query-btn):hover {
+  color: #fff !important;
+  background-color: #3b8fce !important;
+  border-color: #3b8fce !important;
+}
+
+main.bg-background-deep
+  .vben-grid-form-actions
+  .ant-btn.ant-btn-primary:not(.vben-grid-query-btn):active {
+  color: #fff !important;
+  background-color: #256fab !important;
+  border-color: #256fab !important;
+}

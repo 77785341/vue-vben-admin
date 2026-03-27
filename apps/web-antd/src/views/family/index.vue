@@ -31,17 +31,6 @@ const [Grid, gridApi] = useVbenVxeGrid({
   formOptions: {
     schema: useGridFormSchema(),
     submitOnChange: true,
-    showCollapseButton: false,
-    actionWrapperClass: 'inline-flex items-center gap-3',
-    layout: 'inline',
-    wrapperClass: 'flex flex-wrap gap-4 pb-0 items-center',
-    commonConfig: {
-      componentProps: {
-        class: 'w-full',
-      },
-      formItemClass: 'flex-none min-w-[160px] max-w-[220px] w-[18%]',
-      hideLabel: true,
-    },
   },
   gridOptions: {
     columns: useColumns(onActionClick),

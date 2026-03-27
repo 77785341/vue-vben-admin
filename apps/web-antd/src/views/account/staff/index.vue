@@ -74,18 +74,6 @@ const [Grid, gridApi] = useVbenVxeGrid({
     fieldMappingTime: [['createTime', ['startTime', 'endTime']]],
     schema: useGridFormSchema(),
     submitOnChange: true,
-    showCollapseButton: false,
-    actionWrapperClass: 'pb-0',
-    layout: 'inline',
-    wrapperClass: 'grid-cols-4 pb-0',
-    commonConfig: {
-      // 所有表单项
-      componentProps: {
-        class: 'grid-cols-4 pb-0',
-      },
-      formItemClass: 'grid-cols-4 pb-0',
-      hideLabel: true,
-    },
   },
   gridOptions: {
     columns: useColumns(onActionClick, onStatusChange),
@@ -232,7 +220,7 @@ onMounted(() => {
     <FormDrawer @success="onRefresh" />
     <AssignRoleDrawer @success="onRefresh" />
     <Grid>
-      <template #submit-before>
+      <template #expand-before>
         <Button type="primary" @click="onCreate">
           {{ $t('system.staff.add') }}
         </Button>

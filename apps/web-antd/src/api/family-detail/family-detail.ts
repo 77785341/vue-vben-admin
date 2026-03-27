@@ -32,6 +32,29 @@ export namespace FamilyDetailApi {
 
   export type TrendStatisticsData = Record<string, unknown>;
   export type StationDeviceItem = Record<string, unknown>;
+
+  export interface SaveInstallerPumpParams {
+    installerStationId: string;
+    pumpName: string;
+    pumpSn: string;
+    pumpType: string;
+  }
+
+  export interface SaveInstallerWallboxParams {
+    installerStationId: string;
+    wallboxModel: string;
+    wallboxName: string;
+    wallboxSn: string;
+  }
+
+  export interface SaveInstallerInverterParams {
+    batteryType: string;
+    installerStationId: string;
+    inverterName: string;
+    inverterSn: string;
+    inverterType: string;
+    pvPower: number;
+  }
 }
 
 /**
@@ -94,10 +117,90 @@ async function getDeviceByStationAndType(stationId: string, type: string) {
   );
 }
 
+/**
+ * 新增热泵设备
+ */
+async function saveInstallerPump(
+  data: FamilyDetailApi.SaveInstallerPumpParams,
+) {
+  return requestClient.post('/installerPump/saveInstallerPump', data);
+}
+
+/**
+ * 新增充电桩设备
+ */
+async function saveInstallerWallbox(
+  data: FamilyDetailApi.SaveInstallerWallboxParams,
+) {
+  return requestClient.post('/installerWallbox/saveInstallerWallbox', data);
+}
+
+/**
+ * 新增逆变器设备
+ */
+async function saveInstallerInverter(
+  data: FamilyDetailApi.SaveInstallerInverterParams,
+) {
+  return requestClient.post('/installerInverter/saveInstallerInverter', data);
+}
+
+/**
+ * 删除逆变器
+ */
+async function deleteInstallerInverter(id: string) {
+  return requestClient.delete(
+    `/installerInverter/deleteInstallerInverter/${id}`,
+  );
+}
+
+/**
+ * 删除热泵
+ */
+async function deleteInstallerPump(id: string) {
+  return requestClient.delete(`/installerPump/deleteInstallerPump/${id}`);
+}
+
+/**
+ * 删除充电桩
+ */
+async function deleteInstallerWallbox(id: string) {
+  return requestClient.delete(`/installerWallbox/deleteInstallerWallbox/${id}`);
+}
+
+/**
+ * 逆变器型号下拉
+ */
+async function getInverterModelOptions() {
+  return requestClient.get('/installerInverter/getInverterModelOptions');
+}
+
+/**
+ * 热泵型号下拉
+ */
+async function getPumpModelOptions() {
+  return requestClient.get('/installerPump/getPumpModelOptions');
+}
+
+/**
+ * 充电桩型号下拉
+ */
+async function getWallBoxModelOption() {
+  return requestClient.get('/installerWallbox/getWallBoxModelOption');
+}
+
 export {
+  deleteInstallerInverter,
+  deleteInstallerPump,
+  deleteInstallerWallbox,
   getDailyStatistics,
   getDeviceByStationAndType,
+  getInverterModelOptions,
   getMonthStatistics,
+  getPumpModelOptions,
   getStationMonitor,
+  getWallBoxModelOption,
   getYearStatistics,
+  saveInstallerInverter,
+  saveInstallerPump,
+  saveInstallerWallbox,
 };
