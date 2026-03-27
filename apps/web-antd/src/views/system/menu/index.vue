@@ -1,9 +1,7 @@
 <script lang="ts" setup>
-import type {
-  OnActionClickParams,
-  VxeTableGridOptions,
-} from '#/adapter/vxe-table';
+import type { OnActionClickParams, VxeTableGridOptions } from '#/adapter/vxe-table';
 
+import { useAccess } from '@vben/access';
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { IconifyIcon, Plus } from '@vben/icons';
 import { $t } from '@vben/locales';
@@ -18,6 +16,12 @@ import { deleteMenu, getMenuList, SystemMenuApi } from '#/api/system/menu';
 import { useColumns } from './data';
 import Form from './modules/form.vue';
 
+const { hasAccessByCodes } = useAccess();
+const canQuery = hasAccessByCodes(['system:menu:query', 'system:menu:list']);
+const canAppend = hasAccessByCodes(['system:menu:add']);
+const canEdit = hasAccessByCodes(['system:menu:edit']);
+const canDelete = hasAccessByCodes(['system:menu:delete']);
+
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
   connectedComponent: Form,
   destroyOnClose: true,
@@ -25,7 +29,11 @@ const [FormDrawer, formDrawerApi] = useVbenDrawer({
 
 const [Grid, gridApi] = useVbenVxeGrid({
   gridOptions: {
-    columns: useColumns(onActionClick),
+    columns: useColumns(onActionClick, {
+      canAppend,
+      canDelete,
+      canEdit,
+    }),
     height: 'auto',
     keepSource: true,
     pagerConfig: {
@@ -34,6 +42,9 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async (_params) => {
+          if (!canQuery) {
+            return [];
+          }
           return await getMenuList();
         },
       },
@@ -55,20 +66,20 @@ const [Grid, gridApi] = useVbenVxeGrid({
   } as VxeTableGridOptions,
 });
 
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<SystemMenuApi.SystemMenu>) {
+function onActionClick({ code, row }: OnActionClickParams<SystemMenuApi.SystemMenu>) {
   switch (code) {
     case 'append': {
+      if (!canAppend) return;
       onAppend(row);
       break;
     }
     case 'delete': {
+      if (!canDelete) return;
       onDelete(row);
       break;
     }
     case 'edit': {
+      if (!canEdit) return;
       onEdit(row);
       break;
     }
@@ -115,7 +126,7 @@ function onDelete(row: SystemMenuApi.SystemMenu) {
     <FormDrawer @success="onRefresh" />
     <Grid>
       <template #toolbar-tools>
-        <Button type="primary" @click="onCreate">
+        <Button v-access:code="'system:menu:add'" type="primary" @click="onCreate">
           <Plus class="size-5" />
           {{ $t('ui.actionTitle.create', [$t('system.menu.name')]) }}
         </Button>
@@ -123,11 +134,7 @@ function onDelete(row: SystemMenuApi.SystemMenu) {
       <template #title="{ row }">
         <div class="flex w-full items-center gap-1">
           <div class="size-5 shrink-0">
-            <IconifyIcon
-              v-if="row.type === 'button'"
-              icon="carbon:security"
-              class="size-full"
-            />
+            <IconifyIcon v-if="row.type === 'button'" icon="carbon:security" class="size-full" />
             <IconifyIcon
               v-else-if="row.meta?.icon"
               :icon="row.meta?.icon || 'carbon:circle-dash'"

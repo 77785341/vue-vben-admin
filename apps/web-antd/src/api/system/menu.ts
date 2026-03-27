@@ -100,7 +100,9 @@ function normalizeStatusValue(status: unknown): 'off' | 'on' | undefined {
   return undefined;
 }
 
-function normalizeMenusStatus(menus: SystemMenuApi.SystemMenu[]) {
+function normalizeMenusStatus(
+  menus: SystemMenuApi.SystemMenu[],
+): SystemMenuApi.SystemMenu[] {
   return (menus || []).map((menu) => ({
     ...menu,
     status: normalizeStatusValue(menu.status) ?? menu.status,
@@ -110,7 +112,9 @@ function normalizeMenusStatus(menus: SystemMenuApi.SystemMenu[]) {
   }));
 }
 
-function sortMenusByOrder(menus: SystemMenuApi.SystemMenu[]) {
+function sortMenusByOrder(
+  menus: SystemMenuApi.SystemMenu[],
+): SystemMenuApi.SystemMenu[] {
   const sorted = [...(menus || [])].toSorted(
     (a, b) => (a.meta?.order ?? 999) - (b.meta?.order ?? 999),
   );

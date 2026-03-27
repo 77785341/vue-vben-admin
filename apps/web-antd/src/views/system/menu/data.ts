@@ -30,7 +30,26 @@ export function getMenuStatusOptions() {
 
 export function useColumns(
   onActionClick: OnActionClickFn<SystemMenuApi.SystemMenu>,
+  permissions: {
+    canAppend?: boolean;
+    canDelete?: boolean;
+    canEdit?: boolean;
+  } = {},
 ): VxeTableGridOptions<SystemMenuApi.SystemMenu>['columns'] {
+  const operationOptions: any[] = [];
+  if (permissions.canAppend) {
+    operationOptions.push({
+      code: 'append',
+      text: $t('system.common.addSubLevel'),
+    });
+  }
+  if (permissions.canEdit) {
+    operationOptions.push('edit');
+  }
+  if (permissions.canDelete) {
+    operationOptions.push('delete');
+  }
+
   return [
     {
       align: 'left',
@@ -96,14 +115,7 @@ export function useColumns(
           onClick: onActionClick,
         },
         name: 'CellOperation',
-        options: [
-          {
-            code: 'append',
-            text: $t('system.common.addSubLevel'),
-          },
-          'edit', // 默认的编辑按钮
-          'delete', // 默认的删除按钮
-        ],
+        options: operationOptions,
       },
       field: 'operation',
       fixed: 'right',
