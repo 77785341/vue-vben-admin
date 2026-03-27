@@ -21,7 +21,7 @@ const defaultPreferences: Preferences = {
     dynamicTitle: true,
     enableCheckUpdates: false,
     enableCopyPreferences: true,
-    enablePreferences: true,
+    enablePreferences: false,
     enableRefreshToken: false,
     enableStickyPreferencesNavigationBar: true,
     isMobile: false,
@@ -140,7 +140,7 @@ const defaultPreferences: Preferences = {
     refresh: true,
     sidebarToggle: true,
     themeToggle: true,
-    timezone: true,
+    timezone: false,
   },
 };
 

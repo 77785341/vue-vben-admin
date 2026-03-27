@@ -17,6 +17,7 @@ import { defineOverridesPreferences } from '@vben/preferences';
  */
 export const overridesPreferences = defineOverridesPreferences({
   app: {
+    authPageLayout: 'panel-left',
     name: import.meta.env.VITE_APP_TITLE,
   },
   logo: {

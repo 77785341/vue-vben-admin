@@ -100,7 +100,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
       componentProps: {
         placeholder: $t('page.family.familyNamePlaceholder'),
       },
-      fieldName: 'installerStationName',
+      fieldName: 'stationName',
       label: $t('page.family.familyName'),
     },
     {
@@ -136,7 +136,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
       componentProps: {
         placeholder: $t('page.family.installerNamePlaceholder'),
       },
-      fieldName: 'stationName',
+      fieldName: 'installerInfoName',
       label: $t('page.family.installerName'),
     },
   ];
@@ -176,10 +176,10 @@ export function useColumns<T = FamilyApi.Family>(
       field: 'createTime',
       title: $t('page.family.createTime'),
     },
-    // {
-    //   field: 'installerInfoId',
-    //   title: '安装商',
-    // },
+    {
+      field: 'installerName',
+      title: '安装商',
+    },
     {
       field: 'pvCapacity',
       title: $t('page.family.pvCapacity'),

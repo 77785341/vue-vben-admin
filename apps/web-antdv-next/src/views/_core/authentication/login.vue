@@ -52,9 +52,7 @@ const formSchema = computed((): VbenFormSchema[] => {
       dependencies: {
         trigger(values, form) {
           if (values.selectAccount) {
-            const findUser = MOCK_USER_OPTIONS.find(
-              (item) => item.value === values.selectAccount,
-            );
+            const findUser = MOCK_USER_OPTIONS.find((item) => item.value === values.selectAccount);
             if (findUser) {
               form.setValues({
                 password: '123456',
@@ -93,6 +91,8 @@ const formSchema = computed((): VbenFormSchema[] => {
   <AuthenticationLogin
     :form-schema="formSchema"
     :loading="authStore.loginLoading"
+    :show-forget-password="false"
+    :show-register="false"
     @submit="authStore.authLogin"
   />
 </template>

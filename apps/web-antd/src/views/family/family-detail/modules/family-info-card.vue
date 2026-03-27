@@ -20,28 +20,23 @@ defineProps<{
         v-if="stationPicture"
         :src="stationPicture"
         :alt="stationName"
-        class="mx-auto h-[224px] w-[374px] object-cover"
+        class="mx-auto aspect-[374/224] w-full max-w-[374px] object-cover"
       />
       <div
         v-else
-        class="mx-auto flex h-[224px] w-[374px] items-center justify-center text-slate-400"
+        class="mx-auto flex aspect-[374/224] w-full max-w-[374px] items-center justify-center text-slate-400"
       >
         {{ $t('page.family.noImage') }}
       </div>
     </div>
     <div class="mt-2 space-y-2">
       <div class="flex items-center gap-2 text-slate-700">
-        <span class="text-[20px] leading-none font-semibold">{{
-          stationName
-        }}</span>
+        <span class="text-[20px] leading-none font-semibold">{{ stationName }}</span>
         <span
           class="mt-1 inline-flex -translate-y-px items-center gap-1.5 text-[14px]"
           :class="onlineInfo.text"
         >
-          <span
-            class="inline-block size-2 rounded-full"
-            :class="onlineInfo.dot"
-          ></span>
+          <span class="inline-block size-2 rounded-full" :class="onlineInfo.dot"></span>
           {{ onlineInfo.label }}
         </span>
       </div>
