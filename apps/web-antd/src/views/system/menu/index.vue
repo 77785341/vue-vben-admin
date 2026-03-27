@@ -1,5 +1,8 @@
 <script lang="ts" setup>
-import type { OnActionClickParams, VxeTableGridOptions } from '#/adapter/vxe-table';
+import type {
+  OnActionClickParams,
+  VxeTableGridOptions,
+} from '#/adapter/vxe-table';
 
 import { useAccess } from '@vben/access';
 import { Page, useVbenDrawer } from '@vben/common-ui';
@@ -66,7 +69,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
   } as VxeTableGridOptions,
 });
 
-function onActionClick({ code, row }: OnActionClickParams<SystemMenuApi.SystemMenu>) {
+function onActionClick({
+  code,
+  row,
+}: OnActionClickParams<SystemMenuApi.SystemMenu>) {
   switch (code) {
     case 'append': {
       if (!canAppend) return;
@@ -126,7 +132,11 @@ function onDelete(row: SystemMenuApi.SystemMenu) {
     <FormDrawer @success="onRefresh" />
     <Grid>
       <template #toolbar-tools>
-        <Button v-access:code="'system:menu:add'" type="primary" @click="onCreate">
+        <Button
+          v-access:code="'system:menu:add'"
+          type="primary"
+          @click="onCreate"
+        >
           <Plus class="size-5" />
           {{ $t('ui.actionTitle.create', [$t('system.menu.name')]) }}
         </Button>
@@ -134,7 +144,11 @@ function onDelete(row: SystemMenuApi.SystemMenu) {
       <template #title="{ row }">
         <div class="flex w-full items-center gap-1">
           <div class="size-5 shrink-0">
-            <IconifyIcon v-if="row.type === 'button'" icon="carbon:security" class="size-full" />
+            <IconifyIcon
+              v-if="row.type === 'button'"
+              icon="carbon:security"
+              class="size-full"
+            />
             <IconifyIcon
               v-else-if="row.meta?.icon"
               :icon="row.meta?.icon || 'carbon:circle-dash'"
