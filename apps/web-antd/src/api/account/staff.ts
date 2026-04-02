@@ -16,7 +16,8 @@ export namespace StaffApi {
     roleIds?: number | number[] | string | string[];
     email?: string;
     phone?: string;
-    status: 'off' | 'on';
+    status?: 'Active' | 'Inactive' | 'off' | 'on';
+    state?: 'Active' | 'Inactive' | 'off' | 'on';
     createTime: string;
   }
 }

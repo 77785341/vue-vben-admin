@@ -1,7 +1,9 @@
 {
   "common": {
     "addSubLevel": "Add Child",
-    "view": "View"
+    "view": "View",
+    "yes": "Yes",
+    "no": "No"
   },
   "dept": {
     "createTime": "Create Time",
@@ -19,18 +21,24 @@
     "assignRole": "Assign Role",
     "avatar": "Avatar",
     "contact": "Contact",
+    "country": "Country",
+    "countryPlaceholder": "Please select country",
     "createTime": "Creation Time",
     "delete": "Delete",
     "edit": "Edit",
     "email": "Email",
+    "emailPlaceholder": "Please enter email",
     "installInfo": "Installer Info",
     "installerName": "Installer Name",
+    "installerNamePlaceholder": "Please enter installer name",
     "list": "Installer List",
     "name": "Installer",
     "operation": "Operation",
     "password": "Password",
     "phone": "Phone",
+    "phonePlaceholder": "Please enter phone number",
     "query": "Query",
+    "missingInstallerId": "Installer ID does not exist",
     "role": "Assign Role",
     "status": "Status",
     "tableRole": "Role",
@@ -129,7 +137,9 @@
     "switchStatusTitle": "Switch Status",
     "title": "Staff Management",
     "unknownRole": "Unknown Role",
-    "username": "Username"
+    "username": "Username",
+    "usernamePlaceholder": "Please enter username",
+    "phonePlaceholder": "Please enter phone number"
   },
   "title": "System Management"
 }

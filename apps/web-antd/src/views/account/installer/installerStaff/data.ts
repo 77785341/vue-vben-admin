@@ -13,6 +13,7 @@ export function useFormSchema(
     label: string;
     value: string;
   }[] = [],
+  isUpdate = false,
 ): VbenFormSchema[] {
   return [
     {
@@ -27,6 +28,9 @@ export function useFormSchema(
     },
     {
       component: 'Input',
+      componentProps: {
+        disabled: isUpdate,
+      },
       fieldName: 'loginName',
       label: $t('system.staff.username'),
       rules: 'required',
@@ -78,7 +82,7 @@ export function useFormSchema(
         optionType: 'button',
       },
       defaultValue: 'Active',
-      fieldName: 'status',
+      fieldName: 'state',
       label: $t('system.staff.status'),
     },
   ];
@@ -88,41 +92,20 @@ export function useGridFormSchema(): VbenFormSchema[] {
   return [
     {
       component: 'Input',
+      componentProps: {
+        placeholder: $t('system.staff.usernamePlaceholder'),
+      },
       fieldName: 'installerName',
       label: $t('system.staff.username'),
     },
 
     {
       component: 'Input',
+      componentProps: {
+        placeholder: $t('system.staff.phonePlaceholder'),
+      },
       fieldName: 'phone',
       label: $t('system.staff.phone'),
-    },
-    // {
-    //   component: 'Select',
-    //   componentProps: {
-    //     allowClear: true,
-    //     options: [
-    //       { label: '管理员', value: 'admin' },
-    //       { label: '普通用户', value: 'user' },
-    //     ],
-    //     style: {
-    //       width: '100%',
-    //     },
-    //   },
-    //   fieldName: 'installerRole',
-    //   label: '账号身份',
-    // },
-    {
-      component: 'Select',
-      componentProps: {
-        allowClear: true,
-        options: [
-          { label: $t('common.enabled'), value: 'Active' },
-          { label: $t('common.disabled'), value: 'Inactive' },
-        ],
-      },
-      fieldName: 'status',
-      label: $t('system.staff.status'),
     },
   ];
 }

@@ -148,23 +148,21 @@ async function saveInstallerInverter(
  * 删除逆变器
  */
 async function deleteInstallerInverter(id: string) {
-  return requestClient.delete(
-    `/installerInverter/deleteInstallerInverter/${id}`,
-  );
+  return requestClient.get(`/installerInverter/deleteInstallerInverter/${id}`);
 }
 
 /**
  * 删除热泵
  */
 async function deleteInstallerPump(id: string) {
-  return requestClient.delete(`/installerPump/deleteInstallerPump/${id}`);
+  return requestClient.get(`/installerPump/deleteInstallerPump/${id}`);
 }
 
 /**
  * 删除充电桩
  */
 async function deleteInstallerWallbox(id: string) {
-  return requestClient.delete(`/installerWallbox/deleteInstallerWallbox/${id}`);
+  return requestClient.get(`/installerWallbox/deleteInstallerWallbox/${id}`);
 }
 
 /**

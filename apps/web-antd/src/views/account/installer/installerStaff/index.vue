@@ -16,7 +16,7 @@ import { Plus } from '@vben/icons';
 import { Button, message, Modal } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteStaff, getAllRoles, getStaffList } from '#/api';
+import { deleteStaff, getAllRoles, getStaffList, updateStaff } from '#/api';
 import { $t } from '#/locales';
 
 import { useColumns, useGridFormSchema } from './data';
@@ -86,7 +86,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
         query: async ({ page }, formValues) => {
           // 检查installerInfoId是否存在
           if (!installerInfoId.value) {
-            message.error('安装商ID不存在');
+            message.error($t('system.installer.missingInstallerId'));
             return { items: [], total: 0 };
           }
           return await getStaffList({
@@ -160,20 +160,34 @@ function confirm(content: string, title: string) {
  */
 async function onStatusChange(
   newStatus: 'off' | 'on' | number,
-  _row: StaffApi.Staff,
+  row: StaffApi.Staff,
 ) {
   const status: Recordable<string> = {
-    off: '禁用',
-    on: '启用',
+    Inactive: $t('system.staff.statusOff'),
+    Active: $t('system.staff.statusOn'),
   };
   try {
-    // 将数字状态转换为字符串
-    const statusValue = newStatus === 1 ? 'on' : 'off';
+    const statusValue =
+      newStatus === 'Active' || newStatus === 1 ? 'Active' : 'Inactive';
     await confirm(
-      `你要将状态切换为 【${status[statusValue] || '未知状态'}】 吗？`,
-      `切换状态`,
+      $t('system.staff.switchStatusContent', [
+        status[statusValue] || $t('system.staff.statusUnknown'),
+      ]),
+      $t('system.staff.switchStatusTitle'),
     );
-    // 由于staff接口没有单独的状态更新方法，这里可以在后续添加
+
+    await updateStaff(row.id, {
+      id: String((row as any).installerId ?? row.id),
+      installerInfoId: installerInfoId.value,
+      loginName: row.loginName,
+      phone: row.phone,
+      email: row.email,
+      installerRole: (row as any).installerRole,
+      state: statusValue,
+    } as any);
+
+    message.success($t('common.operationSuccess'));
+    onRefresh();
     return true;
   } catch {
     return false;
@@ -222,7 +236,7 @@ onMounted(() => {
   if (id) {
     installerInfoId.value = id;
   } else {
-    message.error('安装商ID不存在');
+    message.error($t('system.installer.missingInstallerId'));
   }
   fetchRoles();
 });

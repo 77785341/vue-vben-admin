@@ -58,7 +58,7 @@ async function fetchRoleOptions() {
 
 // 计算表单配置，传入部门和角色选项
 const formSchema = computed(() => {
-  return useFormSchema(deptOptions.value, roleOptions.value);
+  return useFormSchema(deptOptions.value, roleOptions.value, isUpdate.value);
 });
 
 // 创建响应式的表单选项
@@ -92,6 +92,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
       // 添加installerInfoId参数
       const submitValues = {
         ...values,
+        id: String(values.id ?? rowId.value ?? ''),
         installerInfoId: installerInfoId.value,
       };
       await (isUpdate.value
@@ -110,7 +111,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
     await Promise.all([fetchDeptOptions(), fetchRoleOptions()]);
 
     const data = drawerApi.getData<any>();
-    isUpdate.value = !!data?.id;
+    isUpdate.value = !!(data?.installerId ?? data?.id);
 
     // 获取installerInfoId参数
     if (data?.installerInfoId) {
@@ -118,8 +119,11 @@ const [Drawer, drawerApi] = useVbenDrawer({
     }
 
     if (isUpdate.value && data) {
-      rowId.value = data.id;
-      await formApi.setValues(data);
+      rowId.value = String(data.installerId ?? data.id ?? '');
+      await formApi.setValues({
+        ...data,
+        id: String(data.installerId ?? data.id ?? ''),
+      });
     } else {
       rowId.value = '';
       await formApi.resetForm();

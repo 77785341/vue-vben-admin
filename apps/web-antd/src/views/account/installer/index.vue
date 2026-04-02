@@ -6,6 +6,7 @@ import type {
 import type { InstallerApi } from '#/api/account/installer';
 
 // 路由跳转页面带着row的installerInfoId
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { Page, useVbenDrawer } from '@vben/common-ui';
@@ -14,12 +15,42 @@ import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { deleteInstaller, getInstallerList } from '#/api';
+import { getCountryList } from '#/api/family';
 import { $t } from '#/locales';
 
 import { useColumns, useGridFormSchema } from './data';
 import Form from './modules/form.vue';
 
 const router = useRouter();
+const countryOptions = ref<Array<{ countryId: string; countryName: string }>>(
+  [],
+);
+
+async function fetchCountryOptions() {
+  try {
+    const response = await getCountryList();
+    countryOptions.value = (response || []).map((item: any) => ({
+      countryId: String(item.countryId ?? item.value ?? ''),
+      countryName: String(item.countryName ?? item.label ?? ''),
+    }));
+  } catch {
+    countryOptions.value = [];
+  }
+}
+
+function getCountryName(country?: string) {
+  if (!country) return '-';
+  const countryOption = countryOptions.value.find(
+    (item) => item.countryId === country,
+  );
+  if (countryOption) return countryOption.countryName;
+  const countryByName = countryOptions.value.find(
+    (item) => item.countryName === country,
+  );
+  if (countryByName) return countryByName.countryName;
+  return country;
+}
+
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
   connectedComponent: Form,
   destroyOnClose: true,
@@ -37,7 +68,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     keepSource: true,
     proxyConfig: {
       ajax: {
-        query: async ({ page }, formValues) => {
+        query: async ({ page }: any, formValues: Record<string, any>) => {
           return await getInstallerList({
             pageNum: page.currentPage,
             pageSize: page.pageSize,
@@ -115,6 +146,10 @@ function onRefresh() {
 function onCreate() {
   formDrawerApi.setData({}).open();
 }
+
+onMounted(() => {
+  fetchCountryOptions();
+});
 </script>
 <template>
   <Page auto-content-height>
@@ -124,6 +159,9 @@ function onCreate() {
         <Button type="primary" @click="onCreate">
           {{ $t('common.create') }}
         </Button>
+      </template>
+      <template #country-name="{ row }">
+        {{ getCountryName((row as any).country ?? (row as any).countryId) }}
       </template>
     </Grid>
   </Page>

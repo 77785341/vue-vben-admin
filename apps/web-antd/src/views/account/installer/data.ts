@@ -12,6 +12,7 @@ import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { InstallerApi } from '#/api/account/installer';
 
+import { getCountryList } from '#/api/family';
 import { $t } from '#/locales';
 
 export function useFormSchema(): VbenFormSchema[] {
@@ -43,6 +44,19 @@ export function useFormSchema(): VbenFormSchema[] {
       fieldName: 'installerEmail',
       label: $t('system.installer.email'),
     },
+    {
+      component: 'ApiSelect',
+      componentProps: {
+        api: getCountryList,
+        class: 'w-full',
+        labelField: 'countryName',
+        placeholder: $t('system.installer.countryPlaceholder'),
+        valueField: 'countryId',
+      },
+      fieldName: 'country',
+      label: $t('system.installer.country'),
+      rules: 'required',
+    },
   ];
 }
 
@@ -50,13 +64,27 @@ export function useGridFormSchema(): VbenFormSchema[] {
   return [
     {
       component: 'Input',
-      fieldName: 'installerName',
+      componentProps: {
+        placeholder: $t('system.installer.installerNamePlaceholder'),
+      },
+      fieldName: 'name',
       label: $t('system.installer.installerName'),
     },
     {
       component: 'Input',
-      fieldName: 'installerPhone',
+      componentProps: {
+        placeholder: $t('system.installer.phonePlaceholder'),
+      },
+      fieldName: 'phone',
       label: $t('system.installer.phone'),
+    },
+    {
+      component: 'Input',
+      componentProps: {
+        placeholder: $t('system.installer.emailPlaceholder'),
+      },
+      fieldName: 'email',
+      label: $t('system.installer.email'),
     },
   ];
 }
@@ -77,6 +105,11 @@ export function useColumns<T = InstallerApi.Installer>(
     {
       field: 'installerEmail',
       title: $t('system.installer.email'),
+    },
+    {
+      slots: { default: 'country-name' },
+      field: 'country',
+      title: $t('system.installer.country'),
     },
 
     // 操作列 查看员工

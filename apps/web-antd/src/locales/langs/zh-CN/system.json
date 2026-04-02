@@ -1,7 +1,9 @@
 {
   "common": {
     "addSubLevel": "新增下级",
-    "view": "查看"
+    "view": "查看",
+    "yes": "是",
+    "no": "否"
   },
   "dept": {
     "createTime": "创建时间",
@@ -20,18 +22,24 @@
     "assignRole": "分配角色",
     "avatar": "头像",
     "contact": "联系人",
+    "country": "国家",
+    "countryPlaceholder": "请选择国家",
     "createTime": "创建时间",
     "delete": "删除",
     "edit": "修改",
     "email": "邮箱",
+    "emailPlaceholder": "请输入邮箱",
     "installInfo": "安装商信息",
     "installerName": "安装商名称",
+    "installerNamePlaceholder": "请输入安装商名称",
     "list": "安装商列表",
     "name": "安装商",
     "operation": "操作",
     "password": "密码",
     "phone": "联系电话",
+    "phonePlaceholder": "请输入联系电话",
     "query": "查询",
+    "missingInstallerId": "安装商ID不存在",
     "role": "分配角色",
     "status": "状态",
     "tableRole": "角色",
@@ -129,7 +137,9 @@
     "switchStatusTitle": "切换状态",
     "title": "员工管理",
     "unknownRole": "未知角色",
-    "username": "用户名"
+    "username": "用户名",
+    "usernamePlaceholder": "请输入用户名",
+    "phonePlaceholder": "请输入手机号"
   },
   "title": "系统管理"
 }

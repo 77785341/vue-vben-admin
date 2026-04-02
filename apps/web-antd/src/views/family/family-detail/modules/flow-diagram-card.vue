@@ -40,7 +40,7 @@ defineProps<{
   >
     <!-- 能流路径层：负责绘制主干线、分支线和流动粒子动画 -->
     <svg
-      class="pointer-events-none absolute inset-0 h-full w-full"
+      class="pointer-events-none absolute inset-0 z-0 h-full w-full"
       viewBox="0 0 390 390"
       preserveAspectRatio="none"
       fill="none"
@@ -181,7 +181,7 @@ defineProps<{
 
     <!-- 中央房屋主体 -->
     <div
-      class="absolute left-1/2 top-1/2 h-[39.49%] w-[60%] -translate-x-1/2 -translate-y-1/2"
+      class="absolute left-1/2 top-1/2 z-10 h-[39.49%] w-[60%] -translate-x-1/2 -translate-y-1/2"
     >
       <img
         :src="flowIcons.centerHouse"
@@ -192,16 +192,14 @@ defineProps<{
 
     <!-- 顶部节点：光伏 -->
     <div
-      class="absolute text-center"
+      class="absolute z-20 text-center"
       :style="flowNodeStyleConfig.staticNodes.solar"
     >
-      <div
-        class="mx-auto mb-1 flex h-6 w-6 items-center justify-center sm:h-7 sm:w-7 md:h-8 md:w-8"
-      >
+      <div class="mx-auto mb-1 flex h-8 w-8 items-center justify-center">
         <img
           :src="flowIcons.solar"
           alt="Solar"
-          class="h-6 w-6 object-contain sm:h-7 sm:w-7 md:h-8 md:w-8"
+          class="h-8 w-8 object-contain"
         />
       </div>
       <div class="text-[10px] text-[#6C7680] sm:text-[11px] md:text-[12px]">
@@ -217,17 +215,11 @@ defineProps<{
 
     <!-- 左侧节点：电网 -->
     <div
-      class="absolute text-center"
+      class="absolute z-20 text-center"
       :style="flowNodeStyleConfig.staticNodes.grid"
     >
-      <div
-        class="mx-auto mb-1 flex h-6 w-6 items-center justify-center sm:h-7 sm:w-7 md:h-8 md:w-8"
-      >
-        <img
-          :src="flowIcons.grid"
-          alt="Grid"
-          class="h-6 w-6 object-contain sm:h-7 sm:w-7 md:h-8 md:w-8"
-        />
+      <div class="mx-auto mb-1 flex h-8 w-8 items-center justify-center">
+        <img :src="flowIcons.grid" alt="Grid" class="h-8 w-8 object-contain" />
       </div>
       <div class="text-[10px] text-[#6C7680] sm:text-[11px] md:text-[12px]">
         Grid
@@ -242,16 +234,14 @@ defineProps<{
 
     <!-- 右侧节点：电池 -->
     <div
-      class="absolute text-center"
+      class="absolute z-20 text-center"
       :style="flowNodeStyleConfig.staticNodes.battery"
     >
-      <div
-        class="mx-auto mb-1 flex h-6 w-6 items-center justify-center sm:h-7 sm:w-7 md:h-8 md:w-8"
-      >
+      <div class="mx-auto mb-1 flex h-8 w-8 items-center justify-center">
         <img
           :src="flowIcons.battery"
           alt="Battery"
-          class="h-6 w-6 object-contain sm:h-7 sm:w-7 md:h-8 md:w-8"
+          class="h-8 w-8 object-contain"
         />
       </div>
       <div class="text-[10px] text-[#6C7680] sm:text-[11px] md:text-[12px]">
@@ -266,7 +256,7 @@ defineProps<{
     </div>
 
     <!-- 底部节点：Wallbox / Heat Pump / Household -->
-    <div class="absolute inset-0 text-center">
+    <div class="absolute inset-0 z-20 text-center">
       <div
         v-for="item in bottomFlowNodes"
         :key="item.id"
@@ -276,13 +266,11 @@ defineProps<{
           flowNodeStyleConfig.bottomDefault
         "
       >
-        <div
-          class="mx-auto mb-1 flex h-6 w-6 items-center justify-center sm:h-7 sm:w-7 md:h-8 md:w-8"
-        >
+        <div class="mx-auto mb-1 flex h-8 w-8 items-center justify-center">
           <img
             :src="item.icon"
             :alt="item.label"
-            class="h-6 w-6 object-contain sm:h-7 sm:w-7 md:h-8 md:w-8"
+            class="h-8 w-8 object-contain"
           />
         </div>
         <div class="text-[10px] text-[#6C7680] sm:text-[11px] md:text-[12px]">

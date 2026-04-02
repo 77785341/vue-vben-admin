@@ -20,10 +20,33 @@ defineProps<{
 
 const emit = defineEmits<{
   create: [];
-  delete: [id: string, typeKey: string];
+  delete: [
+    item: {
+      faultNum: number;
+      id: string;
+      image?: string;
+      key: string;
+      sn: string;
+      status: string;
+      title: string;
+      typeKey: string;
+    },
+  ];
   reset: [];
-  search: [];
+  search: [value: string | undefined];
   'update:deviceType': [value: string | undefined];
+  view: [
+    item: {
+      faultNum: number;
+      id: string;
+      image?: string;
+      key: string;
+      sn: string;
+      status: string;
+      title: string;
+      typeKey: string;
+    },
+  ];
 }>();
 
 const actionIcons = {
@@ -42,27 +65,24 @@ const actionIcons = {
         :placeholder="$t('page.family.deviceType')"
         allow-clear
         @update:value="
-          emit('update:deviceType', ($event as string | undefined) || undefined)
+          emit(
+            'update:deviceType',
+            ($event as string | undefined) || undefined,
+          );
+          emit('search', ($event as string | undefined) || undefined);
         "
       />
+      <Button
+        class="device-filter-btn device-filter-btn-primary"
+        @click="emit('create')"
+      >
+        {{ $t('common.create') }}
+      </Button>
       <Button
         class="device-filter-btn device-filter-btn-soft"
         @click="emit('reset')"
       >
         {{ $t('common.reset') }}
-      </Button>
-      <Button
-        class="device-filter-btn device-filter-btn-soft"
-        @click="emit('search')"
-      >
-        {{ $t('common.query') }}
-      </Button>
-      <Button
-        class="device-filter-btn device-filter-btn-primary"
-        type="primary"
-        @click="emit('create')"
-      >
-        {{ $t('common.create') }}
       </Button>
     </div>
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -103,12 +123,15 @@ const actionIcons = {
         <div class="mt-4 grid grid-cols-2 gap-3">
           <button
             class="device-action-btn device-action-delete"
-            @click="emit('delete', item.id, item.typeKey)"
+            @click="emit('delete', item)"
           >
             <img :src="actionIcons.delete" alt="delete" class="action-icon" />
-            {{ $t('common.delete') }}
+            Delete
           </button>
-          <button class="device-action-btn device-action-view">
+          <button
+            class="device-action-btn device-action-view"
+            @click="emit('view', item)"
+          >
             <img :src="actionIcons.view" alt="view" class="action-icon" />
             View
           </button>

@@ -634,6 +634,9 @@ importers:
 
   apps/web-antd:
     dependencies:
+      '@borochi/device-fault-codes':
+        specifier: workspace:*
+        version: link:../../packages/device-fault-codes
       '@vben-core/menu-ui':
         specifier: workspace:*
         version: link:../../packages/@core/ui-kit/menu-ui
@@ -1577,6 +1580,12 @@ importers:
       '@vben-core/shared':
         specifier: workspace:*
         version: link:../@core/base/shared
+
+  packages/device-fault-codes:
+    devDependencies:
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
 
   packages/effects/access:
     dependencies:

@@ -2,7 +2,7 @@
 import type { EchartsUIType } from '@vben/plugins/echarts';
 
 import { computed, onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 import { Page } from '@vben/common-ui';
 import { EchartsUI, useEcharts } from '@vben/plugins/echarts';
@@ -32,8 +32,10 @@ const API_BASE_URL =
   'https://test-bucket-borochi.s3.eu-central-1.amazonaws.com/';
 
 const route = useRoute();
+const router = useRouter();
 const familyId = ref<string>('');
 const stationId = ref<string>('');
+const deviceCreateOpen = ref(false);
 const familyData = ref<any>(null);
 const monitorData = ref<any>(null);
 const stationDevicesRaw = ref<any[]>([]);
@@ -87,13 +89,13 @@ function buildNodeStyle(x: number, y: number) {
 const flowNodeStyleConfig = {
   bottomById: {
     'heat-pump': buildNodeStyle(195, 315),
-    household: buildNodeStyle(275, 315),
-    wallbox: buildNodeStyle(115, 315),
+    household: buildNodeStyle(260, 315),
+    wallbox: buildNodeStyle(130, 315),
   },
   bottomDefault: buildNodeStyle(195, 310),
   staticNodes: {
-    battery: buildNodeStyle(330, 110),
-    grid: buildNodeStyle(79, 180),
+    battery: buildNodeStyle(300, 110),
+    grid: buildNodeStyle(100, 180),
     solar: buildNodeStyle(195, 8),
   },
 } as const;
@@ -255,14 +257,14 @@ const bottomTrunkStatus = computed<FlowStatus>(() => {
 
 const flowPathConfig = {
   battery: {
-    base: 'M260 228 L330 228 L330 194',
-    forwardPath: 'M330 194 L330 228 L260 228',
-    reversePath: 'M260 228 L330 228 L330 194',
+    base: 'M240 228 L300 228 L300 194',
+    forwardPath: 'M300 194 L300 228 L240 228',
+    reversePath: 'M240 228 L300 228 L300 194',
   },
   grid: {
-    base: 'M79 173 L79 139 L156 139',
-    forwardPath: 'M79 173 L79 139 L156 139',
-    reversePath: 'M156 139 L79 139 L79 173',
+    base: 'M100 173 L100 140 L160 140',
+    forwardPath: 'M100 173 L100 140 L160 140',
+    reversePath: 'M160 140 L100 140 L100 173',
   },
   bottomTrunk: {
     base: 'M195 268 L195 288',
@@ -275,14 +277,14 @@ const flowPathConfig = {
     reversePath: 'M195 310 L195 288',
   },
   household: {
-    base: 'M195 288 L275 288 L275 310',
-    forwardPath: 'M195 288 L275 288 L275 310',
-    reversePath: 'M275 310 L275 288 L195 288',
+    base: 'M195 288 L260 288 L260 310',
+    forwardPath: 'M195 288 L260 288 L260 310',
+    reversePath: 'M260 310 L260 288 L195 288',
   },
   wallbox: {
-    base: 'M195 288 L115 288 L115 310',
-    forwardPath: 'M195 288 L115 288 L115 310',
-    reversePath: 'M115 310 L115 288 L195 288',
+    base: 'M195 288 L130 288 L130 310',
+    forwardPath: 'M195 288 L130 288 L130 310',
+    reversePath: 'M130 310 L130 288 L195 288',
   },
   solar: {
     base: 'M195 90 L195 125',
@@ -344,22 +346,21 @@ const flowIcons = {
   wallbox: '/images/family/family-icon-wallbox@2x.png',
 };
 
-type DeviceTypeKey = 'inverters' | 'pumps' | 'wallboxes';
+type DeviceTypeKey = 'inverter' | 'pump' | 'wallbox';
 
 const deviceTypeOptions = [
-  { label: '光储系统', value: 'inverters' },
-  { label: '热泵', value: 'pumps' },
-  { label: '充电桩', value: 'wallboxes' },
+  { label: '光储系统', value: 'inverter' },
+  { label: '热泵', value: 'pump' },
+  { label: '充电桩', value: 'wallbox' },
 ];
 
 const deviceTypeImageMap: Record<DeviceTypeKey, string> = {
-  inverters: '/images/family/family-device-inverter@2x.png',
-  pumps: '/images/family/family-device-heat-pump@2x.png',
-  wallboxes: '/images/family/family-device-wallbox@2x.png',
+  inverter: '/images/family/family-device-inverter@2x.png',
+  pump: '/images/family/family-device-heat-pump@2x.png',
+  wallbox: '/images/family/family-device-wallbox@2x.png',
 };
 
 const deviceTypeQuery = ref<string | undefined>(undefined);
-const createDeviceModalOpen = ref(false);
 
 function resolveDeviceTypeKey(typeValue: unknown): DeviceTypeKey | null {
   const normalized = String(typeValue ?? '')
@@ -368,13 +369,13 @@ function resolveDeviceTypeKey(typeValue: unknown): DeviceTypeKey | null {
   if (!normalized) return null;
 
   if (['1', 'inverter', 'inverters', 'pv', 'solar'].includes(normalized)) {
-    return 'inverters';
+    return 'inverter';
   }
   if (['2', 'heat-pump', 'heatpump', 'pump', 'pumps'].includes(normalized)) {
-    return 'pumps';
+    return 'pump';
   }
   if (['3', 'charger', 'wallbox', 'wallboxes'].includes(normalized)) {
-    return 'wallboxes';
+    return 'wallbox';
   }
   return null;
 }
@@ -399,7 +400,7 @@ async function fetchStationDevices(type = '') {
       resolveDeviceTypeKey(item?.type) ??
       resolveDeviceTypeKey(item?.deviceType) ??
       resolveDeviceTypeKey(type) ??
-      'inverters';
+      'inverter';
     return { ...item, __type: resolvedType };
   });
 }
@@ -413,36 +414,52 @@ function handleDeviceTypeReset() {
   void fetchStationDevices('');
 }
 
-function handleCreateDevice() {
-  createDeviceModalOpen.value = true;
+function handleDeviceCreate() {
+  deviceCreateOpen.value = true;
 }
 
-function handleCreateDeviceSuccess() {
+function handleDeviceCreateSuccess() {
+  deviceCreateOpen.value = false;
   void fetchStationDevices(deviceTypeQuery.value ?? '');
 }
 
-function handleDeleteDevice(id: string, typeKey: string) {
-  Modal.confirm({
-    title: '确认删除',
-    content: '确定要删除该设备吗？',
-    okText: '删除',
-    okType: 'danger',
-    cancelText: '取消',
-    async onOk() {
-      try {
-        if (typeKey === 'pumps') {
-          await deleteInstallerPump(id);
-        } else if (typeKey === 'wallboxes') {
-          await deleteInstallerWallbox(id);
-        } else {
-          await deleteInstallerInverter(id);
-        }
-        message.success('删除成功');
-        void fetchStationDevices(deviceTypeQuery.value ?? '');
-      } catch {
-        message.error('删除失败');
-      }
+function handleDeviceView(item: { sn: string; typeKey: string }) {
+  const rawSn = item.sn.replace(/^SN:/i, '');
+  router.push({
+    name: 'PvStorageDetail',
+    query: {
+      sn: rawSn,
+      type: item.typeKey,
     },
+  });
+}
+
+async function handleDeviceDelete(item: {
+  id: string;
+  title: string;
+  typeKey: string;
+}) {
+  if (!item?.id) {
+    message.warning('设备ID不存在，无法删除');
+    return;
+  }
+
+  Modal.confirm({
+    centered: true,
+    content: `确认删除设备 ${item.title || ''} 吗？`,
+    onOk: async () => {
+      if (item.typeKey === 'pump') {
+        await deleteInstallerPump(item.id);
+      } else if (item.typeKey === 'wallbox') {
+        await deleteInstallerWallbox(item.id);
+      } else {
+        await deleteInstallerInverter(item.id);
+      }
+
+      message.success('删除设备成功');
+      await fetchStationDevices(deviceTypeQuery.value ?? '');
+    },
+    title: '删除设备',
   });
 }
 
@@ -451,15 +468,15 @@ const deviceCards = computed(() => {
   const source = stationDevicesRaw.value;
 
   const typeNameMap: Record<string, string> = {
-    inverters: '光储系统',
-    pumps: '热泵',
-    wallboxes: '充电桩',
+    inverter: '光储系统',
+    pump: '热泵',
+    wallbox: '充电桩',
   };
 
   const typeSnFieldMap: Record<string, string> = {
-    inverters: 'inverterSn',
-    pumps: 'pumpSn',
-    wallboxes: 'wallboxSn',
+    inverter: 'inverterSn',
+    pump: 'pumpSn',
+    wallbox: 'wallboxSn',
   };
 
   return source.map((item: any, index: number) => {
@@ -467,7 +484,7 @@ const deviceCards = computed(() => {
       resolveDeviceTypeKey(item?.type) ??
       resolveDeviceTypeKey(item?.deviceType) ??
       resolveDeviceTypeKey(item?.__type) ??
-      'inverters';
+      'inverter';
 
     const snField = typeSnFieldMap[resolvedTypeKey] ?? '';
     const rawSn =
@@ -503,9 +520,9 @@ const deviceCards = computed(() => {
     const faultCount = Number(rawFault);
 
     const typeIdFieldMap: Record<string, string> = {
-      inverters: 'inverterId',
-      pumps: 'pumpId',
-      wallboxes: 'wallboxId',
+      inverter: 'inverterId',
+      pump: 'pumpId',
+      wallbox: 'wallboxId',
     };
     const idField = typeIdFieldMap[resolvedTypeKey] ?? 'id';
     const rawId = String(item?.[idField] ?? item?.id ?? item?.deviceId ?? '');
@@ -926,7 +943,7 @@ onMounted(() => {
               class="h-full rounded-xl bg-white p-3 shadow-sm ring-1 ring-slate-100"
             >
               <div
-                class="grid h-full grid-cols-1 gap-4 rounded-xl xl:grid-cols-[minmax(0,1.8fr)_minmax(0,1.2fr)] xl:items-stretch"
+                class="grid h-full grid-cols-1 gap-4 rounded-xl 2xl:grid-cols-[minmax(0,1.8fr)_minmax(0,1.2fr)] 2xl:items-stretch"
               >
                 <div class="h-full min-h-0">
                   <FlowDiagramCard
@@ -948,7 +965,9 @@ onMounted(() => {
                   />
                 </div>
 
-                <div class="flex h-full items-center">
+                <div
+                  class="flex h-full items-center justify-center 2xl:justify-end"
+                >
                   <GenerationSummaryPanel :summary-cards="summaryCards" />
                 </div>
               </div>
@@ -972,17 +991,18 @@ onMounted(() => {
         :device-cards="deviceCards"
         :device-type="deviceTypeQuery"
         :device-type-options="deviceTypeOptions"
-        @create="handleCreateDevice"
-        @delete="handleDeleteDevice"
+        @create="handleDeviceCreate"
+        @delete="handleDeviceDelete"
         @reset="handleDeviceTypeReset"
         @search="handleDeviceTypeSearch"
         @update:device-type="deviceTypeQuery = $event"
+        @view="handleDeviceView"
       />
 
       <DeviceCreateModal
-        v-model:open="createDeviceModalOpen"
+        v-model:open="deviceCreateOpen"
         :installer-station-id="stationId"
-        @success="handleCreateDeviceSuccess"
+        @success="handleDeviceCreateSuccess"
       />
     </div>
   </Page>

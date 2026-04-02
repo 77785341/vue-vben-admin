@@ -54,9 +54,18 @@ const [Drawer, drawerApi] = useVbenDrawer({
     try {
       drawerApi.setState({ loading: true });
       const values = await formApi.getValues();
+      const payload = {
+        installerEmail: String(values.installerEmail ?? ''),
+        installerName: String(values.installerName ?? ''),
+        installerPhone: String(values.installerPhone ?? ''),
+        country: String(values.country ?? ''),
+      };
       await (isUpdate.value
-        ? updateInstaller(values)
-        : createInstaller(values as any));
+        ? updateInstaller({
+            ...payload,
+            id: Number(values.id ?? rowId.value),
+          })
+        : createInstaller(payload as any));
       emit('success');
       drawerApi.close();
     } finally {
@@ -71,7 +80,10 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
     if (isUpdate.value && data) {
       rowId.value = data.id;
-      await formApi.setValues(data);
+      await formApi.setValues({
+        ...data,
+        country: data.country ?? data.countryId ?? '',
+      });
     } else {
       rowId.value = '';
       await formApi.resetForm();

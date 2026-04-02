@@ -11,6 +11,13 @@ defineProps<{
   stationName: string;
   stationPicture: string;
 }>();
+
+const infoIcons = {
+  address: '/images/family/family-info-address@2x.png',
+  installer: '/images/family/family-info-installer@2x.png',
+  phone: '/images/family/family-info-phone@2x.png',
+  time: '/images/family/family-info-time@2x.png',
+};
 </script>
 
 <template>
@@ -45,20 +52,44 @@ defineProps<{
           {{ onlineInfo.label }}
         </span>
       </div>
-      <div class="flex items-center text-xl text-slate-500">
-        <span class="mr-2 inline-block h-4 w-4 rounded bg-slate-200"></span>
+      <div
+        class="flex items-center text-[clamp(12px,0.9vw,14px)] text-slate-500"
+      >
+        <img
+          :src="infoIcons.address"
+          alt="Address"
+          class="mr-2 h-[clamp(12px,0.9vw,14px)] w-[clamp(12px,0.9vw,14px)] shrink-0 object-contain"
+        />
         <span>{{ stationAddress }}</span>
       </div>
-      <div class="flex items-center text-xl text-slate-500">
-        <span class="mr-2 inline-block h-4 w-4 rounded bg-slate-200"></span>
+      <div
+        class="flex items-center text-[clamp(12px,0.9vw,14px)] text-slate-500"
+      >
+        <img
+          :src="infoIcons.time"
+          alt="Time"
+          class="mr-2 h-[clamp(12px,0.9vw,14px)] w-[clamp(12px,0.9vw,14px)] shrink-0 object-contain"
+        />
         <span>{{ createTime || '--' }}</span>
       </div>
-      <div class="flex items-center text-xl text-slate-500">
-        <span class="mr-2 inline-block h-4 w-4 rounded bg-slate-200"></span>
+      <div
+        class="flex items-center text-[clamp(12px,0.9vw,14px)] text-slate-500"
+      >
+        <img
+          :src="infoIcons.installer"
+          alt="Installer"
+          class="mr-2 h-[clamp(12px,0.9vw,14px)] w-[clamp(12px,0.9vw,14px)] shrink-0 object-contain"
+        />
         <span>{{ customerName || $t('page.family.defaultCustomerName') }}</span>
       </div>
-      <div class="flex items-center text-xl text-slate-500">
-        <span class="mr-2 inline-block h-4 w-4 rounded bg-slate-200"></span>
+      <div
+        class="flex items-center text-[clamp(12px,0.9vw,14px)] text-slate-500"
+      >
+        <img
+          :src="infoIcons.phone"
+          alt="Phone"
+          class="mr-2 h-[clamp(12px,0.9vw,14px)] w-[clamp(12px,0.9vw,14px)] shrink-0 object-contain"
+        />
         <span>{{ phone || familyId || '--' }}</span>
       </div>
     </div>

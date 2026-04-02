@@ -1,5 +1,5 @@
 import type { VbenFormSchema } from '#/adapter/form';
-import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
+import type { OnActionClickFn } from '#/adapter/vxe-table';
 import type { StaffApi } from '#/api/account/staff';
 
 import { $t } from '#/locales';
@@ -13,6 +13,7 @@ export function useFormSchema(
     label: string;
     value: string;
   }[] = [],
+  isUpdate = false,
 ): VbenFormSchema[] {
   return [
     {
@@ -27,6 +28,9 @@ export function useFormSchema(
     },
     {
       component: 'Input',
+      componentProps: {
+        disabled: isUpdate,
+      },
       fieldName: 'loginName',
       label: $t('system.staff.username'),
       rules: 'required',
@@ -57,13 +61,13 @@ export function useFormSchema(
       componentProps: {
         buttonStyle: 'solid',
         options: [
-          { label: $t('common.enabled'), value: 'on' },
-          { label: $t('common.disabled'), value: 'off' },
+          { label: $t('common.enabled'), value: 'Active' },
+          { label: $t('common.disabled'), value: 'Inactive' },
         ],
         optionType: 'button',
       },
-      defaultValue: 'on',
-      fieldName: 'status',
+      defaultValue: 'Active',
+      fieldName: 'state',
       label: $t('system.staff.status'),
     },
   ];
@@ -73,26 +77,20 @@ export function useGridFormSchema(): VbenFormSchema[] {
   return [
     {
       component: 'Input',
+      componentProps: {
+        placeholder: $t('system.staff.usernamePlaceholder'),
+      },
       fieldName: 'loginName',
       label: $t('system.staff.username'),
     },
 
     {
       component: 'Input',
+      componentProps: {
+        placeholder: $t('system.staff.phonePlaceholder'),
+      },
       fieldName: 'phone',
       label: $t('system.staff.phone'),
-    },
-    {
-      component: 'Select',
-      componentProps: {
-        allowClear: true,
-        options: [
-          { label: $t('common.enabled'), value: 'on' },
-          { label: $t('common.disabled'), value: 'off' },
-        ],
-      },
-      fieldName: 'status',
-      label: $t('system.staff.status'),
     },
   ];
 }
@@ -100,7 +98,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 export function useColumns<T = StaffApi.Staff>(
   onActionClick: OnActionClickFn<T>,
   onStatusChange?: (newStatus: any, row: T) => PromiseLike<boolean | undefined>,
-): VxeTableGridOptions['columns'] {
+): any[] {
   return [
     {
       slots: { default: 'image-url' },
@@ -131,8 +129,8 @@ export function useColumns<T = StaffApi.Staff>(
       cellRender: {
         attrs: {
           beforeChange: onStatusChange,
-          checkedValue: 'on',
-          uncheckedValue: 'off',
+          checkedValue: 'Active',
+          uncheckedValue: 'Inactive',
         },
         name: onStatusChange ? 'CellSwitch' : 'CellTag',
       },

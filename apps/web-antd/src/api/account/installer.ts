@@ -19,6 +19,9 @@ export namespace InstallerApi {
     installerInfoId: string;
     installerPhone: string;
     installerEmail: string;
+    country?: string;
+    countryId?: string;
+    countryName?: string;
   }
 
   export interface InstallerInfoOption {

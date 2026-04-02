@@ -14,7 +14,7 @@ import { Page, useVbenDrawer } from '@vben/common-ui';
 import { Button, message, Modal } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteStaff, getAllRoles, getStaffList } from '#/api';
+import { deleteStaff, getAllRoles, getStaffList, updateStaff } from '#/api';
 import { $t } from '#/locales';
 
 import { useColumns, useGridFormSchema } from './data';
@@ -81,7 +81,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     keepSource: true,
     proxyConfig: {
       ajax: {
-        query: async ({ page }, formValues) => {
+        query: async ({ page }: any, formValues: Record<string, any>) => {
           return await getStaffList({
             pageNum: page.currentPage,
             pageSize: page.pageSize,
@@ -150,21 +150,35 @@ function confirm(content: string, title: string) {
  * @param row 行数据
  * @returns 返回false则中止改变，返回其他值（undefined、true）则允许改变
  */
-async function onStatusChange(newStatus: 'off' | 'on' | number) {
+async function onStatusChange(
+  newStatus: 'Active' | 'Inactive' | 'off' | 'on' | number,
+  row: StaffApi.Staff,
+) {
   const status: Recordable<string> = {
-    off: $t('system.staff.statusOff'),
-    on: $t('system.staff.statusOn'),
+    Inactive: $t('system.staff.statusOff'),
+    Active: $t('system.staff.statusOn'),
   };
   try {
-    // 将数字状态转换为字符串
-    const statusValue = newStatus === 1 ? 'on' : 'off';
+    const statusValue =
+      newStatus === 'Active' || newStatus === 1 ? 'Active' : 'Inactive';
     await confirm(
       $t('system.staff.switchStatusContent', [
         status[statusValue] || $t('system.staff.statusUnknown'),
       ]),
       $t('system.staff.switchStatusTitle'),
     );
-    // 由于staff接口没有单独的状态更新方法，这里可以在后续添加
+
+    const staffId = String((row as any).installerId ?? row.id ?? '');
+    await updateStaff(staffId, {
+      id: staffId,
+      loginName: row.loginName,
+      phone: row.phone,
+      email: row.email,
+      state: statusValue,
+    } as any);
+
+    message.success($t('common.operationSuccess'));
+    onRefresh();
     return true;
   } catch {
     return false;

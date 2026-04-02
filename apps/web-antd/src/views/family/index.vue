@@ -14,6 +14,7 @@ import { Button } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getFamilyList } from '#/api/family';
+import { $t } from '#/locales';
 
 import { useColumns, useGridFormSchema } from './data';
 import Form from './modules/form.vue';
@@ -21,6 +22,7 @@ import Form from './modules/form.vue';
 const API_BASE_URL =
   'https://test-bucket-borochi.s3.eu-central-1.amazonaws.com/';
 const router = useRouter();
+
 const [FormModal, formModalApi] = useVbenModal({
   connectedComponent: Form,
   destroyOnClose: true,
@@ -38,7 +40,11 @@ const [Grid, gridApi] = useVbenVxeGrid({
     keepSource: true,
     proxyConfig: {
       ajax: {
-        query: async ({ page }, formValues) => {
+        query: async (
+          params: { page: { currentPage: number; pageSize: number } },
+          formValues: Record<string, unknown>,
+        ) => {
+          const { page } = params;
           return await getFamilyList({
             pageNum: page.currentPage,
             pageSize: page.pageSize,
@@ -83,16 +89,12 @@ function onView(row: FamilyApi.Family) {
   });
 }
 
-function onRefresh() {
-  gridApi.query();
-}
-
-// function onRoleSelectSuccess() {
-//   onRefresh();
-// }
-
 function onCreate() {
   formModalApi.setData({}).open();
+}
+
+function onRefresh() {
+  gridApi.query();
 }
 
 // 组件挂载时初始化
@@ -105,7 +107,9 @@ onMounted(() => {
     <FormModal @success="onRefresh" />
     <Grid>
       <template #expand-before>
-        <Button type="primary" @click="onCreate">添加</Button>
+        <Button type="primary" @click="onCreate">
+          {{ $t('common.create') }}
+        </Button>
       </template>
       <template #image-url="{ row }">
         <div class="flex-center h-full">
