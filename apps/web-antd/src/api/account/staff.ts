@@ -30,7 +30,10 @@ async function getStaffList(params?: Recordable<any>) {
   const userInfo = userStore.userInfo;
   // 优先使用传进来的installerInfoId，否则使用用户信息中的
   const installerInfoId =
-    params?.installerInfoId || userInfo?.installerInfoId || '';
+    params?.installerInfoId ||
+    (userInfo as any)?.installer?.installerInfoId ||
+    userInfo?.installerInfoId ||
+    '';
 
   return requestClient.post<{ items: StaffApi.Staff[]; total: number }>(
     '/installer/getEmployeePage/',

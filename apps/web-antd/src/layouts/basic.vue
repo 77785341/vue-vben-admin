@@ -89,6 +89,9 @@ const userStore = useUserStore();
 const authStore = useAuthStore();
 const accessStore = useAccessStore();
 const { destroyWatermark, updateWatermark } = useWatermark();
+const installerProfile = computed(
+  () => (userStore.userInfo as any)?.installer ?? {},
+);
 const showDot = computed(() =>
   notifications.value.some((item) => !item.isRead),
 );
@@ -153,7 +156,26 @@ const menus = computed(() => {
 });
 
 const avatar = computed(() => {
-  return userStore.userInfo?.avatar ?? preferences.app.defaultAvatar;
+  return (
+    installerProfile.value?.avatar ||
+    userStore.userInfo?.avatar ||
+    preferences.app.defaultAvatar
+  );
+});
+
+const dropdownText = computed(() => {
+  return (
+    installerProfile.value?.loginName ||
+    userStore.userInfo?.realName ||
+    userStore.userInfo?.username ||
+    ''
+  );
+});
+
+const dropdownDescription = computed(() => {
+  return (
+    installerProfile.value?.email || (userStore.userInfo as any)?.email || ''
+  );
 });
 
 async function handleLogout() {
@@ -215,8 +237,8 @@ watch(
       <UserDropdown
         :avatar
         :menus
-        :text="userStore.userInfo?.realName"
-        description="ann.vben@gmail.com"
+        :text="dropdownText"
+        :description="dropdownDescription"
         tag-text="Pro"
         @logout="handleLogout"
       />
