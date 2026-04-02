@@ -1774,8 +1774,8 @@ onBeforeRouteLeave(() => {
                   >
                     <FormItem>
                       <template #label>
-<span class="text-red-500">*</span>Power On
-</template>
+                        <span class="text-red-500">*</span>Power On
+                      </template>
                       <Switch v-model:checked="systemForm.powerOn" />
                     </FormItem>
                     <FormItem>
@@ -1790,8 +1790,8 @@ onBeforeRouteLeave(() => {
                     </FormItem>
                     <FormItem>
                       <template #label>
-<span class="text-red-500">*</span>Work Mode
-</template>
+                        <span class="text-red-500">*</span>Work Mode
+                      </template>
                       <Select
                         v-model:value="systemForm.workMode"
                         placeholder="Select..."
@@ -1832,9 +1832,8 @@ onBeforeRouteLeave(() => {
                   >
                     <FormItem>
                       <template #label>
-<span class="text-red-500">*</span>Meter
-                        Model
-</template>
+                        <span class="text-red-500">*</span>Meter Model
+                      </template>
                       <Select
                         v-model:value="meterForm.meterModel"
                         placeholder="Select..."
@@ -1843,9 +1842,8 @@ onBeforeRouteLeave(() => {
                     </FormItem>
                     <FormItem>
                       <template #label>
-<span class="text-red-500">*</span>Feeder
-                        switch
-</template>
+                        <span class="text-red-500">*</span>Feeder switch
+                      </template>
                       <Switch v-model:checked="meterForm.feederSwitch" />
                     </FormItem>
                     <FormItem v-if="meterForm.feederSwitch">
@@ -1860,8 +1858,8 @@ onBeforeRouteLeave(() => {
                     </FormItem>
                     <FormItem>
                       <template #label>
-<span class="text-red-500">*</span>CT Ratio
-</template>
+                        <span class="text-red-500">*</span>CT Ratio
+                      </template>
                       <InputNumber
                         v-model:value="meterForm.ctRatio"
                         :min="1"
@@ -1894,9 +1892,8 @@ onBeforeRouteLeave(() => {
                   >
                     <FormItem>
                       <template #label>
-<span class="text-red-500">*</span>Battery
-                        Model
-</template>
+                        <span class="text-red-500">*</span>Battery Model
+                      </template>
                       <Select
                         v-model:value="batteryForm.batteryModel"
                         placeholder="Select..."
