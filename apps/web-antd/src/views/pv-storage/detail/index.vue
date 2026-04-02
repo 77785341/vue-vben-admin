@@ -922,9 +922,7 @@ onBeforeRouteLeave(() => {
                       <Card.Grid
                         style="width: 33.33%; padding: 0; box-shadow: none"
                       >
-                        <span style="color: #9ea8b2"
-                          >Current total power：</span
-                        >
+                        <span style="color: #9ea8b2">Current total power：</span>
                         <span style="color: #6c7680">{{
                           deviceInfo?.p7 ?? '--'
                         }}</span>
@@ -963,9 +961,7 @@ onBeforeRouteLeave(() => {
                       <Card.Grid
                         style="width: 33.33%; padding: 0; box-shadow: none"
                       >
-                        <span style="color: #9ea8b2"
-                          >Main ARM software version：</span
-                        >
+                        <span style="color: #9ea8b2">Main ARM software version：</span>
                         <span style="color: #6c7680">{{
                           deviceInfo?.p12 ?? '--'
                         }}</span>
@@ -973,9 +969,7 @@ onBeforeRouteLeave(() => {
                       <Card.Grid
                         style="width: 33.33%; padding: 0; box-shadow: none"
                       >
-                        <span style="color: #9ea8b2"
-                          >ARM auxiliary software version：</span
-                        >
+                        <span style="color: #9ea8b2">ARM auxiliary software version：</span>
                         <span style="color: #6c7680">{{
                           deviceInfo?.p20 ?? '--'
                         }}</span>
@@ -983,9 +977,7 @@ onBeforeRouteLeave(() => {
                       <Card.Grid
                         style="width: 33.33%; padding: 0; box-shadow: none"
                       >
-                        <span style="color: #9ea8b2"
-                          >Main DSP software version：</span
-                        >
+                        <span style="color: #9ea8b2">Main DSP software version：</span>
                         <span style="color: #6c7680">{{
                           deviceInfo?.p18 ?? '--'
                         }}</span>
@@ -993,9 +985,7 @@ onBeforeRouteLeave(() => {
                       <Card.Grid
                         style="width: 33.33%; padding: 0; box-shadow: none"
                       >
-                        <span style="color: #9ea8b2"
-                          >Auxiliary DSP software version：</span
-                        >
+                        <span style="color: #9ea8b2">Auxiliary DSP software version：</span>
                         <span style="color: #6c7680">{{
                           deviceInfo?.auxiliaryDspSoftwareVersion || '2.0'
                         }}</span>
@@ -1026,9 +1016,7 @@ onBeforeRouteLeave(() => {
                       <Card.Grid
                         style="width: 33.33%; padding: 0; box-shadow: none"
                       >
-                        <span style="color: #9ea8b2"
-                          >Current total power：</span
-                        >
+                        <span style="color: #9ea8b2">Current total power：</span>
                         <span style="color: #6c7680">{{
                           deviceInfo?.p42 ?? '--'
                         }}</span>
@@ -1036,9 +1024,7 @@ onBeforeRouteLeave(() => {
                       <Card.Grid
                         style="width: 33.33%; padding: 0; box-shadow: none"
                       >
-                        <span style="color: #9ea8b2"
-                          >Total power generation：</span
-                        >
+                        <span style="color: #9ea8b2">Total power generation：</span>
                         <span style="color: #6c7680">{{
                           deviceInfo?.p196 ?? '--'
                         }}</span>
@@ -1224,9 +1210,7 @@ onBeforeRouteLeave(() => {
                       <Card.Grid
                         style="width: 33.33%; padding: 0; box-shadow: none"
                       >
-                        <span style="color: #9ea8b2"
-                          >Total electricity purchased:</span
-                        >
+                        <span style="color: #9ea8b2">Total electricity purchased:</span>
                         <span style="color: #6c7680">{{
                           deviceInfo?.e43 ?? '--'
                         }}</span>
@@ -1234,9 +1218,7 @@ onBeforeRouteLeave(() => {
                       <Card.Grid
                         style="width: 33.33%; padding: 0; box-shadow: none"
                       >
-                        <span style="color: #9ea8b2"
-                          >Total electricity sales:</span
-                        >
+                        <span style="color: #9ea8b2">Total electricity sales:</span>
                         <span style="color: #6c7680">{{
                           deviceInfo?.e44 ?? '--'
                         }}</span>
@@ -1499,9 +1481,7 @@ onBeforeRouteLeave(() => {
                       <Card.Grid
                         style="width: 33.33%; padding: 0; box-shadow: none"
                       >
-                        <span style="color: #9ea8b2"
-                          >Battery cycle count：</span
-                        >
+                        <span style="color: #9ea8b2">Battery cycle count：</span>
                         <span style="color: #6c7680">{{
                           deviceInfo?.b5 ?? '--'
                         }}</span>
@@ -1510,61 +1490,44 @@ onBeforeRouteLeave(() => {
                         style="width: 33.33%; padding: 0; box-shadow: none"
                       >
                         <span style="color: #9ea8b2">Battery SOH：</span>
-                        <span style="color: #6c7680"
-                          >{{ deviceInfo?.b8 ?? '--' }} %</span
-                        >
+                        <span style="color: #6c7680">{{ deviceInfo?.b8 ?? '--' }} %</span>
                       </Card.Grid>
                       <Card.Grid
                         style="width: 33.33%; padding: 0; box-shadow: none"
                       >
                         <span style="color: #9ea8b2">Battery SOC：</span>
-                        <span style="color: #6c7680"
-                          >{{ deviceInfo?.b7 ?? '--' }} %</span
-                        >
+                        <span style="color: #6c7680">{{ deviceInfo?.b7 ?? '--' }} %</span>
                       </Card.Grid>
                       <Card.Grid
                         style="width: 33.33%; padding: 0; box-shadow: none"
                       >
                         <span style="color: #9ea8b2">Battery voltage：</span>
-                        <span style="color: #6c7680"
-                          >{{ deviceInfo?.b9 ?? '--' }} V</span
-                        >
+                        <span style="color: #6c7680">{{ deviceInfo?.b9 ?? '--' }} V</span>
                       </Card.Grid>
                       <Card.Grid
                         style="width: 33.33%; padding: 0; box-shadow: none"
                       >
                         <span style="color: #9ea8b2">Charging current：</span>
-                        <span style="color: #6c7680"
-                          >{{ deviceInfo?.b10 ?? '--' }} A</span
-                        >
+                        <span style="color: #6c7680">{{ deviceInfo?.b10 ?? '--' }} A</span>
                       </Card.Grid>
                       <Card.Grid
                         style="width: 33.33%; padding: 0; box-shadow: none"
                       >
                         <span style="color: #9ea8b2">Discharge current：</span>
-                        <span style="color: #6c7680"
-                          >{{ deviceInfo?.b11 ?? '--' }} A</span
-                        >
+                        <span style="color: #6c7680">{{ deviceInfo?.b11 ?? '--' }} A</span>
                       </Card.Grid>
                       <Card.Grid
                         style="width: 33.33%; padding: 0; box-shadow: none"
                       >
-                        <span style="color: #9ea8b2"
-                          >Battery temperature：</span
-                        >
-                        <span style="color: #6c7680"
-                          >{{ deviceInfo?.b4 ?? '--' }} ℃
+                        <span style="color: #9ea8b2">Battery temperature：</span>
+                        <span style="color: #6c7680">{{ deviceInfo?.b4 ?? '--' }} ℃
                         </span>
                       </Card.Grid>
                       <Card.Grid
                         style="width: 33.33%; padding: 0; box-shadow: none"
                       >
-                        <span style="color: #9ea8b2"
-                          >BMS motherboard temperature：</span
-                        >
-                        <span style="color: #6c7680"
-                          >{{ deviceInfo?.b21 ?? '--' }} ℃</span
-                        >
+                        <span style="color: #9ea8b2">BMS motherboard temperature：</span>
+                        <span style="color: #6c7680">{{ deviceInfo?.b21 ?? '--' }} ℃</span>
                       </Card.Grid>
                     </div>
                     <div style="width: 100%; margin-top: 1rem">
@@ -1810,9 +1773,9 @@ onBeforeRouteLeave(() => {
                     class="max-w-[640px]"
                   >
                     <FormItem>
-                      <template #label
-                        ><span class="text-red-500">*</span>Power On</template
-                      >
+                      <template #label>
+<span class="text-red-500">*</span>Power On
+</template>
                       <Switch v-model:checked="systemForm.powerOn" />
                     </FormItem>
                     <FormItem>
@@ -1826,9 +1789,9 @@ onBeforeRouteLeave(() => {
                       />
                     </FormItem>
                     <FormItem>
-                      <template #label
-                        ><span class="text-red-500">*</span>Work Mode</template
-                      >
+                      <template #label>
+<span class="text-red-500">*</span>Work Mode
+</template>
                       <Select
                         v-model:value="systemForm.workMode"
                         placeholder="Select..."
@@ -1868,10 +1831,10 @@ onBeforeRouteLeave(() => {
                     class="max-w-[640px]"
                   >
                     <FormItem>
-                      <template #label
-                        ><span class="text-red-500">*</span>Meter
-                        Model</template
-                      >
+                      <template #label>
+<span class="text-red-500">*</span>Meter
+                        Model
+</template>
                       <Select
                         v-model:value="meterForm.meterModel"
                         placeholder="Select..."
@@ -1879,10 +1842,10 @@ onBeforeRouteLeave(() => {
                       />
                     </FormItem>
                     <FormItem>
-                      <template #label
-                        ><span class="text-red-500">*</span>Feeder
-                        switch</template
-                      >
+                      <template #label>
+<span class="text-red-500">*</span>Feeder
+                        switch
+</template>
                       <Switch v-model:checked="meterForm.feederSwitch" />
                     </FormItem>
                     <FormItem v-if="meterForm.feederSwitch">
@@ -1896,9 +1859,9 @@ onBeforeRouteLeave(() => {
                       />
                     </FormItem>
                     <FormItem>
-                      <template #label
-                        ><span class="text-red-500">*</span>CT Ratio</template
-                      >
+                      <template #label>
+<span class="text-red-500">*</span>CT Ratio
+</template>
                       <InputNumber
                         v-model:value="meterForm.ctRatio"
                         :min="1"
@@ -1930,10 +1893,10 @@ onBeforeRouteLeave(() => {
                     class="max-w-[640px]"
                   >
                     <FormItem>
-                      <template #label
-                        ><span class="text-red-500">*</span>Battery
-                        Model</template
-                      >
+                      <template #label>
+<span class="text-red-500">*</span>Battery
+                        Model
+</template>
                       <Select
                         v-model:value="batteryForm.batteryModel"
                         placeholder="Select..."

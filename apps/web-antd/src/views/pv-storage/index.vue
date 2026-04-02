@@ -1,5 +1,8 @@
 <script lang="ts" setup>
-import type { OnActionClickParams, VxeTableGridOptions } from '#/adapter/vxe-table';
+import type {
+  OnActionClickParams,
+  VxeTableGridOptions,
+} from '#/adapter/vxe-table';
 import type { PvStorageApi } from '#/api/pv-storage/pv-storage';
 
 import { onMounted } from 'vue';
@@ -51,7 +54,9 @@ const [Grid] = useVbenVxeGrid({
   } as VxeTableGridOptions<PvStorageApi.InverterDeviceItem>,
 });
 
-function onActionClick(e: OnActionClickParams<PvStorageApi.InverterDeviceItem>) {
+function onActionClick(
+  e: OnActionClickParams<PvStorageApi.InverterDeviceItem>,
+) {
   switch (e.code) {
     case 'view': {
       onView(e.row);
@@ -83,7 +88,9 @@ onMounted(() => {
           v-if="row.faultType === 'Error'"
           class="inline-flex items-center gap-2 text-red-400 font-medium"
         >
-          <span class="inline-block size-2 rounded-full bg-red-400 ring-2 ring-red-100"></span>
+          <span
+            class="inline-block size-2 rounded-full bg-red-400 ring-2 ring-red-100"
+          ></span>
           <span>故障</span>
         </div>
         <div
@@ -120,7 +127,9 @@ onMounted(() => {
           v-else-if="row.status === 'offline'"
           class="inline-flex items-center gap-2 text-slate-400 font-medium"
         >
-          <span class="inline-block size-2 rounded-full bg-slate-400 ring-2 ring-slate-100"></span>
+          <span
+            class="inline-block size-2 rounded-full bg-slate-400 ring-2 ring-slate-100"
+          ></span>
           <span>Offline</span>
         </div>
         <span v-else class="text-slate-400">-</span>

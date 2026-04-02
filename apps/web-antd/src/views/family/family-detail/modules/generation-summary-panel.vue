@@ -42,8 +42,7 @@ defineProps<{
           </span>
           <span
             class="ml-1 shrink-0 text-[clamp(10px,0.8vw,13px)] font-normal leading-none text-[#237EBC]"
-            >{{ item.unit }}</span
-          >
+            >{{ item.unit }}</span>
         </div>
       </div>
     </div>
