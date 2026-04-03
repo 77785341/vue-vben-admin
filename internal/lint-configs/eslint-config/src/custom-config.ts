@@ -34,8 +34,7 @@ const customConfig: Linter.Config[] = [
           patterns: [
             {
               group: ['#/api/*'],
-              message:
-                'The #/api package cannot be imported, please use the @core package itself',
+              message: 'The #/api package cannot be imported, please use the @core package itself',
             },
             {
               group: ['#/layouts/*'],
@@ -116,19 +115,11 @@ const customConfig: Linter.Config[] = [
           patterns: [
             {
               group: ['@vben/*'],
-              message:
-                'The @vben package cannot be imported, please use the @core package itself',
+              message: 'The @vben package cannot be imported, please use the @core package itself',
             },
           ],
         },
       ],
-    },
-  },
-  // 后端模拟代码，不需要太多规则
-  {
-    files: ['apps/backend-mock/**/**', 'docs/**/**'],
-    rules: {
-      'no-console': 'off',
     },
   },
   {

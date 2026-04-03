@@ -54,14 +54,6 @@ export async function node(): Promise<Linter.Config[]> {
       },
     },
     {
-      files: ['apps/backend-mock/**/**', 'docs/**/**'],
-      rules: {
-        'n/no-extraneous-import': 'off',
-        'n/prefer-global/buffer': 'off',
-        'n/prefer-global/process': 'off',
-      },
-    },
-    {
       files: ['**/**/playwright.config.ts'],
       rules: {
         'n/prefer-global/buffer': 'off',
@@ -69,10 +61,7 @@ export async function node(): Promise<Linter.Config[]> {
       },
     },
     {
-      files: [
-        'scripts/**/*.?([cm])[jt]s?(x)',
-        'internal/**/*.?([cm])[jt]s?(x)',
-      ],
+      files: ['scripts/**/*.?([cm])[jt]s?(x)', 'internal/**/*.?([cm])[jt]s?(x)'],
       rules: {
         'n/prefer-global/process': 'off',
       },

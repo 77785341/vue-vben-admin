@@ -19,7 +19,6 @@ const DEFAULT_CONFIG = {
   ],
   // 需要忽略的包
   ignorePackages: [
-    '@vben/backend-mock',
     '@vben/commitlint-config',
     '@vben/eslint-config',
     '@vben/node-utils',
@@ -153,10 +152,7 @@ async function runDepcheck(config: DepcheckConfig = {}): Promise<void> {
       console.log('\n✅ Dependency check completed, no issues found');
     }
   } catch (error) {
-    console.error(
-      '❌ Dependency check failed:',
-      error instanceof Error ? error.message : error,
-    );
+    console.error('❌ Dependency check failed:', error instanceof Error ? error.message : error);
   }
 }
 
@@ -167,18 +163,9 @@ async function runDepcheck(config: DepcheckConfig = {}): Promise<void> {
 function defineDepcheckCommand(cac: CAC): void {
   cac
     .command('check-dep')
-    .option(
-      '--ignore-packages <packages>',
-      'Packages to ignore, comma separated',
-    )
-    .option(
-      '--ignore-matches <matches>',
-      'Dependency patterns to ignore, comma separated',
-    )
-    .option(
-      '--ignore-patterns <patterns>',
-      'File patterns to ignore, comma separated',
-    )
+    .option('--ignore-packages <packages>', 'Packages to ignore, comma separated')
+    .option('--ignore-matches <matches>', 'Dependency patterns to ignore, comma separated')
+    .option('--ignore-patterns <patterns>', 'File patterns to ignore, comma separated')
     .usage('Analyze project dependencies')
     .action(async ({ ignoreMatches, ignorePackages, ignorePatterns }) => {
       const config: DepcheckConfig = {
