@@ -1,9 +1,0 @@
-{
-  "extends": "../../internal/tsconfig/library.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "moduleResolution": "node"
-  },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
-}

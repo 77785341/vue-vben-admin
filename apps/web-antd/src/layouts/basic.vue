@@ -14,7 +14,11 @@ import {
   Notification,
   UserDropdown,
 } from '@vben/layouts';
-import { preferences, updatePreferences } from '@vben/preferences';
+import {
+  preferences,
+  updatePreferences,
+  usePreferences,
+} from '@vben/preferences';
 import { useAccessStore, useUserStore } from '@vben/stores';
 import { openWindow } from '@vben/utils';
 
@@ -85,10 +89,28 @@ updatePreferences({
 });
 
 const router = useRouter();
+const { sidebarCollapsed } = usePreferences();
 const userStore = useUserStore();
 const authStore = useAuthStore();
 const accessStore = useAccessStore();
 const { destroyWatermark, updateWatermark } = useWatermark();
+const AVATAR_BASE_URL =
+  'https://test-bucket-borochi.s3.eu-central-1.amazonaws.com/';
+
+function withAvatarPrefix(avatar?: string) {
+  if (!avatar) return avatar;
+  if (
+    avatar.startsWith('http://') ||
+    avatar.startsWith('https://') ||
+    avatar.startsWith('data:') ||
+    avatar.startsWith('blob:') ||
+    avatar.startsWith('svg:')
+  ) {
+    return avatar;
+  }
+  return `${AVATAR_BASE_URL}${avatar.replace(/^\/+/, '')}`;
+}
+
 const installerProfile = computed(
   () => (userStore.userInfo as any)?.installer ?? {},
 );
@@ -156,11 +178,12 @@ const menus = computed(() => {
 });
 
 const avatar = computed(() => {
-  return (
+  const rawAvatar =
     installerProfile.value?.avatar ||
     userStore.userInfo?.avatar ||
-    preferences.app.defaultAvatar
-  );
+    preferences.app.defaultAvatar;
+
+  return withAvatarPrefix(rawAvatar);
 });
 
 const dropdownText = computed(() => {
@@ -225,7 +248,7 @@ watch(
 <template>
   <BasicLayout @clear-preferences-and-logout="handleLogout">
     <template #logo>
-      <div class="flex h-full w-full items-center">
+      <div v-if="!sidebarCollapsed" class="flex h-full w-full items-center">
         <img
           alt="logo"
           src="/images/logo/LOGO@2x.png"

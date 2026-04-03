@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { onMounted, onUnmounted, ref } from 'vue';
+
 type LocalFlowStatus = 'dis' | 'in' | 'out';
 
 // 能流图渲染组件：根据父层传入状态决定路径高亮和粒子动画方向。
@@ -32,6 +34,35 @@ defineProps<{
   powerVo: Record<string, any>;
   solarFlowStatus: LocalFlowStatus;
 }>();
+
+// 粒子点基准半径（viewBox 坐标单位）。
+const DOT_R = 3;
+// 补偿后的 x 半径：当容器非正方形时，通过缩小 rx 抵消横向拉伸，使点在屏幕上呈现为正圆。
+const dotRx = ref(DOT_R);
+const svgEl = ref<null | SVGSVGElement>(null);
+
+let ro: null | ResizeObserver = null;
+
+function updateDotRx() {
+  if (!svgEl.value) return;
+  const { width, height } = svgEl.value.getBoundingClientRect();
+  if (width > 0 && height > 0) {
+    // rx * (W/390) == DOT_R * (H/390)  →  rx = DOT_R * H/W
+    dotRx.value = DOT_R * (height / width);
+  }
+}
+
+onMounted(() => {
+  ro = new ResizeObserver(updateDotRx);
+  if (svgEl.value) {
+    ro.observe(svgEl.value);
+    updateDotRx();
+  }
+});
+
+onUnmounted(() => {
+  ro?.disconnect();
+});
 </script>
 
 <template>
@@ -40,6 +71,7 @@ defineProps<{
   >
     <!-- 能流路径层：负责绘制主干线、分支线和流动粒子动画 -->
     <svg
+      ref="svgEl"
       class="pointer-events-none absolute inset-0 z-0 h-full w-full"
       viewBox="0 0 390 390"
       preserveAspectRatio="none"
@@ -51,7 +83,12 @@ defineProps<{
         :class="{ 'flow-path-active': isFlowActive(solarFlowStatus) }"
         :d="flowPathConfig.solar.base"
       />
-      <circle v-if="isFlowActive(solarFlowStatus)" class="flow-dot" r="3">
+      <ellipse
+        v-if="isFlowActive(solarFlowStatus)"
+        class="flow-dot"
+        :rx="dotRx"
+        ry="3"
+      >
         <animateMotion
           dur="2.4s"
           repeatCount="indefinite"
@@ -64,7 +101,7 @@ defineProps<{
             )
           "
         />
-      </circle>
+      </ellipse>
 
       <!-- 电网主路由 -->
       <path
@@ -72,7 +109,12 @@ defineProps<{
         :class="{ 'flow-path-active': isFlowActive(gridFlowStatus) }"
         :d="flowPathConfig.grid.base"
       />
-      <circle v-if="isFlowActive(gridFlowStatus)" class="flow-dot" r="3">
+      <ellipse
+        v-if="isFlowActive(gridFlowStatus)"
+        class="flow-dot"
+        :rx="dotRx"
+        ry="3"
+      >
         <animateMotion
           dur="2.4s"
           repeatCount="indefinite"
@@ -85,7 +127,7 @@ defineProps<{
             )
           "
         />
-      </circle>
+      </ellipse>
 
       <!-- 电池主路由 -->
       <path
@@ -93,7 +135,12 @@ defineProps<{
         :class="{ 'flow-path-active': isFlowActive(batteryFlowStatus) }"
         :d="flowPathConfig.battery.base"
       />
-      <circle v-if="isFlowActive(batteryFlowStatus)" class="flow-dot" r="3">
+      <ellipse
+        v-if="isFlowActive(batteryFlowStatus)"
+        class="flow-dot"
+        :rx="dotRx"
+        ry="3"
+      >
         <animateMotion
           dur="2.4s"
           repeatCount="indefinite"
@@ -106,7 +153,7 @@ defineProps<{
             )
           "
         />
-      </circle>
+      </ellipse>
 
       <!-- 底部总线（汇总到底部负载区） -->
       <path
@@ -114,13 +161,18 @@ defineProps<{
         :class="{ 'flow-path-active': isFlowActive(bottomTrunkStatus) }"
         :d="flowPathConfig.bottomTrunk.base"
       />
-      <circle v-if="isFlowActive(bottomTrunkStatus)" class="flow-dot" r="3">
+      <ellipse
+        v-if="isFlowActive(bottomTrunkStatus)"
+        class="flow-dot"
+        :rx="dotRx"
+        ry="3"
+      >
         <animateMotion
-          dur="2.4s"
+          dur="3.6s"
           repeatCount="indefinite"
           calcMode="linear"
           keyPoints="0;1;1"
-          keyTimes="0;0.5;1"
+          keyTimes="0;0.2;1"
           :path="
             getFlowMotionPath(
               bottomTrunkStatus,
@@ -132,12 +184,12 @@ defineProps<{
         />
         <animate
           attributeName="opacity"
-          dur="2.4s"
+          dur="3.6s"
           repeatCount="indefinite"
           values="1;1;0;0"
-          keyTimes="0;0.45;0.5;1"
+          keyTimes="0;0.18;0.2;1"
         />
-      </circle>
+      </ellipse>
 
       <!-- 底部各分支路径和对应粒子动画 -->
       <path
@@ -147,19 +199,20 @@ defineProps<{
         :class="{ 'flow-path-active': isFlowActive(item.flowStatus) }"
         :d="item.path.base"
       />
-      <circle
+      <ellipse
         v-for="item in activeBottomFlowNodes"
         :key="`dot-${item.id}`"
         class="flow-dot"
-        r="3"
+        :rx="dotRx"
+        ry="3"
         :style="{ fill: item.color }"
       >
         <animateMotion
-          dur="2.4s"
+          dur="3.6s"
           repeatCount="indefinite"
           calcMode="linear"
           keyPoints="0;0;1"
-          keyTimes="0;0.5;1"
+          keyTimes="0;0.2;1"
           :path="
             getFlowMotionPath(
               item.flowStatus,
@@ -171,12 +224,12 @@ defineProps<{
         />
         <animate
           attributeName="opacity"
-          dur="2.4s"
+          dur="3.6s"
           repeatCount="indefinite"
           values="0;0;1;1"
-          keyTimes="0;0.5;0.55;1"
+          keyTimes="0;0.2;0.23;1"
         />
-      </circle>
+      </ellipse>
     </svg>
 
     <!-- 中央房屋主体 -->
@@ -297,7 +350,7 @@ defineProps<{
 }
 
 .flow-path-active {
-  stroke: #d9eaf7;
+  stroke: #55a2df;
 }
 
 .flow-dot {

@@ -34,7 +34,7 @@ export const overridesPreferences = defineOverridesPreferences({
     globalSearch: false,
   },
   sidebar: {
-    collapsedButton: false,
+    collapsedButton: true,
     fixedButton: false,
     width: 260,
   },

@@ -68,6 +68,10 @@ export class VxeGridApi<T extends Record<string, any> = any> {
 
   async query(params: Record<string, any> = {}) {
     try {
+      if (!this.isMounted || !this.grid?.commitProxy) {
+        console.warn('Grid is not mounted yet, skipping query');
+        return;
+      }
       await this.grid.commitProxy('query', toRaw(params));
     } catch (error) {
       console.error('Error occurred while querying:', error);
@@ -76,6 +80,10 @@ export class VxeGridApi<T extends Record<string, any> = any> {
 
   async reload(params: Record<string, any> = {}) {
     try {
+      if (!this.isMounted || !this.grid?.commitProxy) {
+        console.warn('Grid is not mounted yet, skipping reload');
+        return;
+      }
       await this.grid.commitProxy('reload', toRaw(params));
     } catch (error) {
       console.error('Error occurred while reloading:', error);

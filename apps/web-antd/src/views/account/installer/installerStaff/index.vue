@@ -11,7 +11,6 @@ import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 import { Page, useVbenDrawer } from '@vben/common-ui';
-import { Plus } from '@vben/icons';
 
 import { Button, message, Modal } from 'ant-design-vue';
 
@@ -248,7 +247,6 @@ onMounted(() => {
     <Grid>
       <template #expand-before>
         <Button type="primary" @click="onCreate">
-          <Plus class="size-5" />
           {{ $t('ui.actionTitle.create', [$t('system.staff.name')]) }}
         </Button>
       </template>

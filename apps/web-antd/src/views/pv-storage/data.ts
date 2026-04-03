@@ -40,6 +40,19 @@ export function useGridFormSchema(): VbenFormSchema[] {
     },
     {
       component: 'Select',
+      fieldName: 'isBind',
+      label: $t('page.pvStorage.isBind'),
+      componentProps: {
+        allowClear: true,
+        options: [
+          { label: $t('page.pvStorage.isBindYes'), value: 'yes' },
+          { label: $t('page.pvStorage.isBindNo'), value: 'no' },
+        ],
+        placeholder: $t('page.pvStorage.isBindPlaceholder'),
+      },
+    },
+    {
+      component: 'Select',
       fieldName: 'status',
       label: $t('page.pvStorage.onlineStatus'),
       componentProps: {
@@ -125,6 +138,11 @@ export function useColumns<T = any>(
       field: 'status',
       title: $t('page.pvStorage.onlineStatus'),
       slots: { default: 'online-status' },
+    },
+    {
+      field: 'isBind',
+      title: $t('page.pvStorage.isBind'),
+      slots: { default: 'bind-status' },
     },
 
     {

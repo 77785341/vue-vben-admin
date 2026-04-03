@@ -10,6 +10,7 @@ export namespace PvStorageApi {
     inverterSn?: string;
     stationName?: string;
     installerInfoName?: string;
+    isBind?: 'no' | 'yes';
     status?: string;
     faultType?: string;
     installerInfoId?: string;
@@ -24,6 +25,7 @@ export namespace PvStorageApi {
     inverterSn: string;
     installerInfoName: string;
     createTime: string;
+    isBind: 'no' | 'yes';
     status: string;
     faultType: string;
     totalFaultCount: number;
@@ -111,6 +113,14 @@ async function getDeviceInfoBySn(sn: string) {
 }
 
 /**
+ * 获取逆变器设备信息（左侧信息卡）
+ * @param sn 设备SN
+ */
+async function getInverterDevice(sn: string) {
+  return requestClient.get(`/installerStation/getInverterDevice/${sn}`);
+}
+
+/**
  * 通用设备详情接口（支持光储、充电桩、热泵等）
  * @param sn 设备SN
  * @param type 设备类型
@@ -190,6 +200,7 @@ export {
   getDeviceFaultByPage,
   getDeviceInfo,
   getDeviceInfoBySn,
+  getInverterDevice,
   getInverterDevicePage,
   pollingControlSettings,
   pollingWriteControlSettings,

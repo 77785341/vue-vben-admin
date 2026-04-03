@@ -188,3 +188,37 @@ main.bg-background-deep
   background-color: #256fab !important;
   border-color: #256fab !important;
 }
+
+/* Keep grid pager readable on transparent layout */
+main.bg-background-deep .vxe-grid--pager-wrapper,
+main.bg-background-deep .vxe-pager {
+  background-color: #fff !important;
+}
+
+main.bg-background-deep .vxe-grid--pager-wrapper {
+  --vxe-ui-layout-background-color: #fff;
+}
+
+main.bg-background-deep .vxe-pager .vxe-pager--num-btn:not(.is--active),
+main.bg-background-deep .vxe-pager .vxe-pager--jump,
+main.bg-background-deep .vxe-pager .vxe-pager--sizes,
+main.bg-background-deep .vxe-pager .vxe-input--inner,
+main.bg-background-deep .vxe-pager .vxe-input--suffix,
+main.bg-background-deep .vxe-pager .vxe-input--prefix,
+main.bg-background-deep .vxe-pager .vxe-pager--prev-btn,
+main.bg-background-deep .vxe-pager .vxe-pager--next-btn,
+main.bg-background-deep .vxe-pager .vxe-pager--jump-prev,
+main.bg-background-deep .vxe-pager .vxe-pager--jump-next {
+  background-color: #fff !important;
+}
+
+main.bg-background-deep .vxe-pager .vxe-pager--num-btn.is--active {
+  color: #fff !important;
+  background-color: #237ebc !important;
+  border-color: #237ebc !important;
+}
+
+.vxe-select--panel,
+.vxe-select--panel-wrapper {
+  background-color: #fff !important;
+}

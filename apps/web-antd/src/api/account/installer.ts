@@ -77,7 +77,7 @@ async function getInstallerInfoOptions() {
 /**
  * 为人员分配角色
  */
-async function assignRoleToInstaller(id: string, roleId: string) {
+async function assignRoleToInstaller(id: string, roleId: string[]) {
   return requestClient.post(`/installers/assignRoles`, { id, roleId });
 }
 

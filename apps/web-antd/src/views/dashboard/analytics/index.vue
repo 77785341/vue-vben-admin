@@ -41,19 +41,39 @@ const monitorData = ref<WebMonitorData>({
 });
 
 function formatCapacity(value: number) {
-  if (!Number.isFinite(value)) return '0.0';
-  return value.toFixed(1);
+  const normalized = Number.isFinite(value) ? Math.max(value, 0) : 0;
+  const units = ['kWp', 'MWp', 'GWp'] as const;
+
+  let unitIndex = 0;
+  let scaledValue = normalized;
+
+  while (scaledValue >= 1000 && unitIndex < units.length - 1) {
+    scaledValue /= 1000;
+    unitIndex += 1;
+  }
+
+  let displayValue = Number(scaledValue.toFixed(1));
+  if (displayValue >= 1000 && unitIndex < units.length - 1) {
+    displayValue = Number((displayValue / 1000).toFixed(1));
+    unitIndex += 1;
+  }
+
+  return {
+    unit: units[unitIndex],
+    value: displayValue.toFixed(1),
+  };
 }
 
 const overviewCards = computed<OverviewCard[]>(() => {
   const data = monitorData.value;
+  const totalPvCapacity = formatCapacity(data.totalPvCapacity);
 
   return [
     {
       backgroundImage: '/images/analytics/home-family@2x.png',
       bottomLabel: 'Total Installed Capacity',
-      bottomUnit: 'kWp',
-      bottomValue: formatCapacity(data.totalPvCapacity),
+      bottomUnit: totalPvCapacity.unit,
+      bottomValue: totalPvCapacity.value,
       topLabel: 'Total Homes',
       topValue: data.totalStationNum,
     },

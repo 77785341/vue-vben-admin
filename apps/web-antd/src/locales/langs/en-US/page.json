@@ -66,8 +66,8 @@
     "selectDate": "Select Date",
     "fault": "Fault",
     "monthStats": "Monthly Stats",
-    "wallboxPower": "Wallbox Power"
-    ,"yearStats": "Yearly Stats"
+    "wallboxPower": "Wallbox Power",
+    "yearStats": "Yearly Stats"
   },
   "pvStorage": {
     "id": "ID",
@@ -97,7 +97,11 @@
     "query": "Query",
     "export": "Export",
     "realtimeFault": "Realtime Fault",
-    "historyFault": "History Fault"
+    "historyFault": "History Fault",
+    "isBind": "Is Bound",
+    "isBindNo": "Unbound",
+    "isBindPlaceholder": "Please select bind status",
+    "isBindYes": "Bound"
   },
   "profile": {
     "accountPassword": "Account Password",

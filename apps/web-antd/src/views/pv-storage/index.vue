@@ -12,6 +12,7 @@ import { Page } from '@vben/common-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getInverterDevicePage } from '#/api';
+import { $t } from '#/locales';
 
 import { useColumns, useGridFormSchema } from './data';
 
@@ -131,6 +132,27 @@ onMounted(() => {
             class="inline-block size-2 rounded-full bg-slate-400 ring-2 ring-slate-100"
           ></span>
           <span>Offline</span>
+        </div>
+        <span v-else class="text-slate-400">-</span>
+      </template>
+      <template #bind-status="{ row }">
+        <div
+          v-if="row.isBind === 'yes'"
+          class="inline-flex items-center gap-2 text-emerald-400 font-medium"
+        >
+          <span
+            class="inline-block size-2 rounded-full bg-emerald-400 ring-2 ring-emerald-100"
+          ></span>
+          <span>{{ $t('page.pvStorage.isBindYes') }}</span>
+        </div>
+        <div
+          v-else-if="row.isBind === 'no'"
+          class="inline-flex items-center gap-2 text-slate-400 font-medium"
+        >
+          <span
+            class="inline-block size-2 rounded-full bg-slate-400 ring-2 ring-slate-100"
+          ></span>
+          <span>{{ $t('page.pvStorage.isBindNo') }}</span>
         </div>
         <span v-else class="text-slate-400">-</span>
       </template>

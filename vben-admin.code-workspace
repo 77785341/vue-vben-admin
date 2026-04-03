@@ -117,10 +117,6 @@
       "path": "packages/constants"
     },
     {
-      "name": "@borochi/device-fault-codes",
-      "path": "packages/device-fault-codes"
-    },
-    {
       "name": "@vben/access",
       "path": "packages/effects/access"
     },

@@ -1,3 +1,13 @@
+<!--
+ * @Author: Felix 77785341@qq.com
+ * @Date: 2026-03-25 11:56:52
+ * @LastEditors: Felix 77785341@qq.com
+ * @LastEditTime: 2026-04-03 15:43:44
+ * @FilePath: \vue-vben-admin\apps\web-antd\src\views\family\family-detail\modules\family-info-card.vue
+ * @Description: 
+ * 
+ * Copyright (c) 2026 by ${git_name_email}, All Rights Reserved. 
+-->
 <script lang="ts" setup>
 import { $t } from '#/locales';
 
@@ -80,7 +90,7 @@ const infoIcons = {
           alt="Installer"
           class="mr-2 h-[clamp(12px,0.9vw,14px)] w-[clamp(12px,0.9vw,14px)] shrink-0 object-contain"
         />
-        <span>{{ customerName || $t('page.family.defaultCustomerName') }}</span>
+        <span>{{ customerName || '--' }}</span>
       </div>
       <div
         class="flex items-center text-[clamp(12px,0.9vw,14px)] text-slate-500"
@@ -90,7 +100,7 @@ const infoIcons = {
           alt="Phone"
           class="mr-2 h-[clamp(12px,0.9vw,14px)] w-[clamp(12px,0.9vw,14px)] shrink-0 object-contain"
         />
-        <span>{{ phone || familyId || '--' }}</span>
+        <span>{{ phone || '--' }}</span>
       </div>
     </div>
   </div>

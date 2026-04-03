@@ -66,7 +66,13 @@ function extendProxyOption(
   });
 }
 
+let isFormatterExtended = false;
+
 export function extendsDefaultFormatter(vxeUI: VxeUIExport) {
+  if (isFormatterExtended) {
+    return;
+  }
+
   vxeUI.formats.add('formatDate', {
     tableCellFormatMethod({ cellValue }) {
       return formatDate(cellValue);
@@ -78,4 +84,6 @@ export function extendsDefaultFormatter(vxeUI: VxeUIExport) {
       return formatDateTime(cellValue);
     },
   });
+
+  isFormatterExtended = true;
 }

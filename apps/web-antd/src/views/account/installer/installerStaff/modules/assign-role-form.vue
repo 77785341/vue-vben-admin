@@ -13,6 +13,16 @@ const emit = defineEmits<{
 
 const rowId = ref<string>('');
 
+function normalizeToArray<T>(value: T | T[] | undefined) {
+  if (Array.isArray(value)) {
+    return value;
+  }
+  if (value !== undefined && value !== null && value !== '') {
+    return [value];
+  }
+  return [] as T[];
+}
+
 const [Form, formApi] = useVbenForm({
   schema: [
     {
@@ -42,7 +52,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
     try {
       drawerApi.setState({ loading: true });
       const values = await formApi.getValues();
-      await assignRoleToInstaller(rowId.value, values.roleId);
+      const roleId = normalizeToArray(values.roleId);
+      await assignRoleToInstaller(rowId.value, roleId);
       emit('success');
       drawerApi.close();
     } finally {
@@ -54,7 +65,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
     const data = drawerApi.getData<any>();
     rowId.value = data?.id;
-    await formApi.setValues({ roleId: data?.roleIds });
+    const roleIds = normalizeToArray(data?.roleIds);
+    await formApi.setValues({ roleId: roleIds[0] ?? undefined });
   },
   title: $t('system.staff.assignRole'),
 });

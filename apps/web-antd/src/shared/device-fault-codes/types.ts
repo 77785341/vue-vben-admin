@@ -12,7 +12,7 @@ export interface InverterFaultEntry {
   descZh: string;
   faultCode: string;
   faultTitle: string;
-  faultType: 'Error' | 'Warning';
+  faultType: '' | 'Error' | 'Warning';
   solutionDe: string;
   solutionEn: string;
   solutionZh: string;
@@ -29,7 +29,7 @@ export interface WallboxFaultEntry {
   faultTitleDe: string;
   faultTitleEn: string;
   faultTitleZh: string;
-  faultType: 'Error' | 'Warning';
+  faultType: '' | 'Error' | 'Warning';
   solutionDe: string;
   solutionEn: string;
   solutionZh: string;
@@ -42,7 +42,7 @@ export interface PumpFaultEntry {
   descZh: string;
   faultCode: string;
   faultTitle: string;
-  faultType: 'Error' | 'Warning';
+  faultType: '' | 'Error' | 'Warning';
   solutionDe: string;
   solutionEn: string;
   solutionZh: string;

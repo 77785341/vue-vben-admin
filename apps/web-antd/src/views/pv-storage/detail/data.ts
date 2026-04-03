@@ -7,14 +7,14 @@ export function useFaultFormSchema(): VbenFormSchema[] {
     {
       component: 'Select',
       fieldName: 'type',
-      label: 'Type',
+      label: '类型',
       defaultValue: 'all',
       componentProps: {
         allowClear: false,
         options: [
-          { label: 'All', value: 'all' },
-          { label: 'Error', value: 'error' },
-          { label: 'Warning', value: 'warning' },
+          { label: '全部', value: 'all' },
+          { label: '故障', value: 'error' },
+          { label: '警告', value: 'warning' },
         ],
       },
     },
@@ -26,25 +26,25 @@ export function useRealtimeFaultColumns<T = any>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [
-    { title: 'No.', type: 'seq', width: 60 },
+    { title: '序号', type: 'seq', width: 60 },
     {
       field: 'faultName',
-      title: 'Fault Name',
+      title: '故障名称',
       formatter: (cellValue: any) => cellValue.cellValue ?? '--',
     },
     {
       field: 'faultTime',
-      title: 'Fault Time',
+      title: '故障时间',
       formatter: (cellValue: any) => cellValue.cellValue ?? '--',
     },
     {
       field: 'faultType',
-      title: 'Fault Type',
+      title: '故障类型',
       slots: { default: 'fault-type' },
     },
     {
       field: 'status',
-      title: 'Status',
+      title: '状态',
       slots: { default: 'fault-status' },
     },
     {
@@ -56,7 +56,7 @@ export function useRealtimeFaultColumns<T = any>(
       },
       field: 'operation',
       fixed: 'right',
-      title: 'Action',
+      title: '操作',
       width: 150,
     },
   ];
@@ -67,30 +67,30 @@ export function useHistoryFaultColumns<T = any>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [
-    { title: 'No.', type: 'seq', width: 60 },
+    { title: '序号', type: 'seq', width: 60 },
     {
       field: 'faultName',
-      title: 'Fault Name',
+      title: '故障名称',
       formatter: (cellValue: any) => cellValue.cellValue ?? '--',
     },
     {
       field: 'startTime',
-      title: 'Start Time',
+      title: '开始时间',
       formatter: (cellValue: any) => cellValue.cellValue ?? '--',
     },
     {
       field: 'endTime',
-      title: 'End Time',
+      title: '结束时间',
       formatter: (cellValue: any) => cellValue.cellValue ?? '--',
     },
     {
       field: 'faultType',
-      title: 'Fault Type',
+      title: '故障类型',
       slots: { default: 'fault-type' },
     },
     {
       field: 'status',
-      title: 'Status',
+      title: '状态',
       slots: { default: 'fault-status' },
     },
     {
@@ -102,7 +102,7 @@ export function useHistoryFaultColumns<T = any>(
       },
       field: 'operation',
       fixed: 'right',
-      title: 'Action',
+      title: '操作',
       width: 150,
     },
   ];

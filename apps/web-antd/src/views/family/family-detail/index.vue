@@ -652,6 +652,34 @@ function handleTrendDateChange(
   void fetchTrendStatistics();
 }
 
+function isSocSeriesName(name: string) {
+  return /(^|\s)soc(\s|$)/i.test(name);
+}
+
+function resolveAxisVisibility(
+  seriesNames: string[],
+  selected?: Record<string, boolean>,
+) {
+  let showLeftAxis = false;
+  let showRightAxis = false;
+
+  seriesNames.forEach((name) => {
+    const isSelected = selected ? selected[name] !== false : true;
+    if (!isSelected) {
+      return;
+    }
+
+    if (isSocSeriesName(name)) {
+      showRightAxis = true;
+      return;
+    }
+
+    showLeftAxis = true;
+  });
+
+  return { showLeftAxis, showRightAxis };
+}
+
 async function fetchTrendStatistics() {
   // 统计接口必须使用 stationId；无 stationId 时清空图表。
   if (!stationId.value) {
@@ -777,7 +805,88 @@ function renderTrendChart() {
     };
   }
 
-  const seriesSource = apiSeries;
+  type SeriesGroupKey =
+    | 'battery-charge'
+    | 'battery-discharge'
+    | 'grid-in'
+    | 'grid-out'
+    | 'pv'
+    | 'soc'
+    | 'unknown'
+    | 'use-power';
+
+  const preferredSeriesOrder: SeriesGroupKey[] = [
+    'use-power',
+    'pv',
+    'grid-in',
+    'grid-out',
+    'battery-charge',
+    'battery-discharge',
+    'soc',
+    'unknown',
+  ];
+
+  const resolveSeriesGroupKey = (name?: string): SeriesGroupKey => {
+    const normalizedName = String(name ?? '')
+      .trim()
+      .toLowerCase();
+    const compactName = normalizedName.split(/\s+/).join('');
+
+    if (compactName.includes('soc')) return 'soc';
+    if (
+      compactName.includes('usepower') ||
+      compactName.includes('haushaltsleistung')
+    ) {
+      return 'use-power';
+    }
+    if (compactName.includes('pvpower')) return 'pv';
+    if (
+      compactName.includes('gridoutpower') ||
+      compactName.includes('gridout')
+    ) {
+      return 'grid-out';
+    }
+    if (compactName.includes('gridinpower') || compactName.includes('gridin')) {
+      return 'grid-in';
+    }
+    if (
+      compactName.includes('batteryinpower') ||
+      compactName.includes('batterieladeleistung')
+    ) {
+      return 'battery-charge';
+    }
+    if (
+      compactName.includes('batteryoutpower') ||
+      compactName.includes('batterieentladeleistung')
+    ) {
+      return 'battery-discharge';
+    }
+    return 'unknown';
+  };
+
+  const seriesDisplayNameMap: Partial<Record<SeriesGroupKey, string>> = {
+    soc: 'SoC',
+    'use-power': 'Use Power',
+    pv: 'PV Power',
+    'grid-in': 'Grid In Power',
+    'grid-out': 'Grid Out Power',
+    'battery-charge': 'Battery In Power',
+    'battery-discharge': 'Battery Out Power',
+  };
+
+  const resolveSeriesDisplayName = (groupKey: SeriesGroupKey): string => {
+    return seriesDisplayNameMap[groupKey] ?? '';
+  };
+
+  const getSeriesOrderIndex = (name?: string) => {
+    const groupKey = resolveSeriesGroupKey(name);
+    const index = preferredSeriesOrder.indexOf(groupKey);
+    return index === -1 ? Number.POSITIVE_INFINITY : index;
+  };
+
+  const seriesSource = apiSeries.toSorted(
+    (a, b) => getSeriesOrderIndex(a?.name) - getSeriesOrderIndex(b?.name),
+  );
   const yAxisUnit = isDay ? 'kW' : 'kWh';
 
   const series = seriesSource.map((seriesItem, index) => {
@@ -785,6 +894,10 @@ function renderTrendChart() {
       color: '#89C0FF',
       name: `Series ${index + 1}`,
     };
+    const groupKey = resolveSeriesGroupKey(seriesItem?.name || fallback.name);
+    const mappedName = resolveSeriesDisplayName(groupKey);
+    const seriesName = mappedName || seriesItem?.name || fallback.name;
+    const isSocSeries = isSocSeriesName(seriesName);
     const seriesAxis = getSeriesAxis(seriesItem);
     let data: Array<null | number>;
 
@@ -813,10 +926,11 @@ function renderTrendChart() {
     return {
       ...barStyle,
       data,
-      name: seriesItem?.name || fallback.name,
-      smooth: isDay,
-      symbol: isDay ? 'none' : 'circle',
-      type: (isDay ? 'line' : 'bar') as 'bar' | 'line',
+      name: seriesName,
+      smooth: isSocSeries || isDay,
+      symbol: isSocSeries || isDay ? 'none' : 'circle',
+      type: (isSocSeries || isDay ? 'line' : 'bar') as 'bar' | 'line',
+      yAxisIndex: isSocSeries ? 1 : 0,
     };
   }) as any[];
 
@@ -829,13 +943,21 @@ function renderTrendChart() {
   seriesSource.forEach((seriesItem, index) => {
     const fallbackName =
       defaultSeriesMeta[index]?.name || `Series ${index + 1}`;
-    const seriesName = seriesItem?.name || fallbackName;
+    const groupKey = resolveSeriesGroupKey(seriesItem?.name || fallbackName);
+    const mappedName = resolveSeriesDisplayName(groupKey);
+    const seriesName = mappedName || seriesItem?.name || fallbackName;
     legendSelected[seriesName] = seriesItem?.isDefault !== false;
   });
 
+  const seriesNames = series.map((item) => String(item?.name ?? ''));
+  const { showLeftAxis, showRightAxis } = resolveAxisVisibility(
+    seriesNames,
+    legendSelected,
+  );
+
   const dayAxisFormatter = (value: string) => normalizeDayAxisLabel(value);
 
-  renderEcharts({
+  void renderEcharts({
     color: chartColors,
     grid: {
       bottom: 56,
@@ -846,6 +968,7 @@ function renderTrendChart() {
     },
     legend: {
       bottom: 4,
+      itemGap: 25,
       itemHeight: 6,
       itemWidth: 12,
       selected: legendSelected,
@@ -868,18 +991,59 @@ function renderTrendChart() {
       data: xData,
       type: 'category',
     },
-    yAxis: {
-      axisLabel: { color: '#94a3b8' },
-      name: yAxisUnit,
-      nameGap: 10,
-      nameLocation: 'end',
-      nameTextStyle: {
-        color: '#64748b',
-        fontSize: 12,
+    yAxis: [
+      {
+        axisLabel: { color: '#94a3b8' },
+        show: showLeftAxis,
+        name: yAxisUnit,
+        nameGap: 10,
+        nameLocation: 'end',
+        nameTextStyle: {
+          color: '#64748b',
+          fontSize: 12,
+        },
+        splitLine: { lineStyle: { color: '#f1f5f9' } },
+        type: 'value',
       },
-      splitLine: { lineStyle: { color: '#f1f5f9' } },
-      type: 'value',
-    },
+      {
+        axisLabel: {
+          color: '#94a3b8',
+          formatter: '{value}',
+        },
+        max: 100,
+        min: 0,
+        show: showRightAxis,
+        name: '%',
+        nameGap: 10,
+        nameLocation: 'end',
+        nameTextStyle: {
+          color: '#64748b',
+          fontSize: 12,
+        },
+        splitLine: { show: false },
+        type: 'value',
+      },
+    ],
+  }).then((chart) => {
+    if (!chart) return;
+
+    chart.off('legendselectchanged');
+    chart.on('legendselectchanged', (params: any) => {
+      const selected = params?.selected as Record<string, boolean> | undefined;
+      const { showLeftAxis: leftVisible, showRightAxis: rightVisible } =
+        resolveAxisVisibility(seriesNames, selected);
+
+      chart.setOption({
+        yAxis: [
+          {
+            show: leftVisible,
+          },
+          {
+            show: rightVisible,
+          },
+        ],
+      });
+    });
   });
 }
 
@@ -931,7 +1095,7 @@ onMounted(() => {
           >
             <FamilyInfoCard
               :create-time="stationBase?.createTime || '--'"
-              :customer-name="stationBase?.customerName || 'Mr Li'"
+              :customer-name="stationBase?.customerName || '--'"
               :online-info="onlineInfo"
               :station-address="stationAddress"
               :station-name="stationName"
@@ -966,7 +1130,7 @@ onMounted(() => {
                 </div>
 
                 <div
-                  class="flex h-full items-center justify-center 2xl:justify-end"
+                  class="flex h-full items-center justify-center 2xl:justify-end 2xl:pr-8"
                 >
                   <GenerationSummaryPanel :summary-cards="summaryCards" />
                 </div>
