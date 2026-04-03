@@ -34,7 +34,8 @@ const customConfig: Linter.Config[] = [
           patterns: [
             {
               group: ['#/api/*'],
-              message: 'The #/api package cannot be imported, please use the @core package itself',
+              message:
+                'The #/api package cannot be imported, please use the @core package itself',
             },
             {
               group: ['#/layouts/*'],
@@ -115,7 +116,8 @@ const customConfig: Linter.Config[] = [
           patterns: [
             {
               group: ['@vben/*'],
-              message: 'The @vben package cannot be imported, please use the @core package itself',
+              message:
+                'The @vben package cannot be imported, please use the @core package itself',
             },
           ],
         },

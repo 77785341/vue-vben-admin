@@ -27,7 +27,9 @@ export const viteNitroMockPlugin = ({
 
       const pkg = await getPackage(mockServerPackage);
       if (!pkg) {
-        consola.log(`Package ${mockServerPackage} not found. Skip mock server.`);
+        consola.log(
+          `Package ${mockServerPackage} not found. Skip mock server.`,
+        );
         return;
       }
 
